@@ -24,5 +24,32 @@
       "The learner asks about the next stop.",
       "The learner asks the driver to wait because of a stroller."
     ]
+  },
+
+  "restaurant": {
+    "role": "waiter",
+    "situations": [
+      "The learner wants to order a chicken and rice dish.",
+      "The learner needs the bill.",
+      "The learner wants to ask if the meat is halal."
+    ]
+  },
+
+  "school": {
+    "role": "teacher",
+    "situations": [
+      "The learner wants to know how their child is doing in class.",
+      "The learner needs to explain that their child is sick and will be absent.",
+      "The learner is asking when the school finishes today."
+    ]
+  },
+
+  "police": {
+    "role": "police officer",
+    "situations": [
+      "The learner is lost and needs directions to the train station.",
+      "The learner lost their wallet and needs to report it.",
+      "The learner is asking for help to find a specific building."
+    ]
   }
 }

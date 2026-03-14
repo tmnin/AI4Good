@@ -1,0 +1,28 @@
+{
+  "grocery": {
+    "role": "store worker",
+    "situations": [
+      "You are in a grocery store. The learner wants to buy fish.",
+      "The learner is looking for rice.",
+      "The learner wants to ask if food is halal."
+    ]
+  },
+
+  "doctor": {
+    "role": "doctor",
+    "situations": [
+      "The learner's child has a fever.",
+      "The learner feels dizzy.",
+      "The learner wants to ask for a female doctor."
+    ]
+  },
+
+  "bus": {
+    "role": "bus driver",
+    "situations": [
+      "The learner wants to go to the hospital.",
+      "The learner asks about the next stop.",
+      "The learner asks the driver to wait because of a stroller."
+    ]
+  }
+}

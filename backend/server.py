@@ -1,0 +1,109 @@
+import json
+import random
+import os
+
+from fastapi import FastAPI
+from pydantic import BaseModel
+from dotenv import load_dotenv
+from openai import OpenAI
+
+
+# -----------------------------
+# Load environment
+# -----------------------------
+
+load_dotenv()
+
+api_key = os.getenv("GROQ_API_KEY")
+
+client = OpenAI(
+    api_key=api_key,
+    base_url="https://api.groq.com/openai/v1"
+)
+
+MODEL = "llama-3.3-70b-versatile"
+
+
+# -----------------------------
+# Load scenarios
+# -----------------------------
+
+with open("scenarios.json") as f:
+    SCENARIOS = json.load(f)
+
+
+# -----------------------------
+# FastAPI setup
+# -----------------------------
+
+app = FastAPI()
+
+
+# -----------------------------
+# Request format
+# -----------------------------
+
+class ConversationRequest(BaseModel):
+    scenario: str
+    user_text: str
+
+
+# -----------------------------
+# Health route
+# -----------------------------
+
+@app.get("/health")
+def health():
+    return {"status": "ok"}
+
+
+# -----------------------------
+# Conversation route
+# -----------------------------
+
+@app.post("/conversation")
+def conversation(req: ConversationRequest):
+
+    scenario = SCENARIOS.get(req.scenario)
+
+    if not scenario:
+        return {"error": "unknown scenario"}
+
+    situation = random.choice(scenario["situations"])
+
+    system_prompt = f"""
+You are helping a Rohingya refugee practice spoken English.
+
+The learner:
+- may speak broken English
+- may use fragments
+- may be nervous
+
+Your rules:
+- respond naturally to what they mean
+- never say they are wrong
+- if needed, suggest a clearer sentence they could say
+- keep sentences short and simple
+
+Scenario:
+{situation}
+
+You are playing the role of: {scenario["role"]}
+
+Output exactly like this:
+
+AI_REPLY: <your response>
+SUGGESTED_PHRASE: <clearer sentence or NONE>
+"""
+
+    response = client.chat.completions.create(
+        model=MODEL,
+        messages=[
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": req.user_text}
+        ]
+    )
+
+    text = response.choices[0].message.content
+
+    return {"response": text}

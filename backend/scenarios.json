@@ -1,5 +1,5 @@
 {
-  "grocery": {
+  "food": {
     "role": "grocery store worker",
     "situations": [
       "A customer asks where to find rice, lentils, or fish.",

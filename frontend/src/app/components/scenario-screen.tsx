@@ -1,3 +1,49 @@
+let recorder: MediaRecorder | null = null
+let chunks: Blob[] = []
+
+async function startRecording() {
+  chunks = []
+
+  const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+
+  recorder = new MediaRecorder(stream)
+
+  recorder.ondataavailable = (e) => {
+    chunks.push(e.data)
+  }
+
+  recorder.start()
+}
+
+async function stopRecording(scenario: string) {
+  if (!recorder) return
+
+  recorder.stop()
+
+  recorder.onstop = async () => {
+    const blob = new Blob(chunks, { type: "audio/webm" })
+    chunks = []
+
+    const form = new FormData()
+    form.append("file", blob, "audio.webm")
+
+    const res = await fetch(`http://127.0.0.1:8000/voice-chat?scenario=${scenario}`, {
+      method: "POST",
+      body: form
+    })
+
+    const audioBlob = await res.blob()
+
+    const audioUrl = URL.createObjectURL(audioBlob)
+
+    const audio = new Audio(audioUrl)
+
+    audio.onended = () => URL.revokeObjectURL(audioUrl)
+
+    await audio.play()
+  }
+}
+
 import { useState, useEffect } from "react";
 import { motion } from "motion/react";
 import type { LucideIcon } from "lucide-react";
@@ -83,10 +129,21 @@ export function ScenarioScreen({ type }: ScenarioScreenProps) {
     audio.play();
   };
 
-  const handleMicClick = () => {
+  const handleMicClick = async () => {
     if (!isReady) return;
-    setIsListening(!isListening);
-    playBeepSound();
+
+    if (!isListening) {
+      setIsListening(true);
+      playBeepSound();
+      await startRecording();
+    } else {
+      setIsListening(false);
+      playBeepSound();
+
+      if (selectedScenario) {
+        await stopRecording(selectedScenario.id);
+      }
+    }
   };
 
   const handleScenarioStep = (direction: "prev" | "next") => {

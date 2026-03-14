@@ -181,7 +181,7 @@ async def transcribe(file: UploadFile = File(...)):
 # -----------------------------
 
 @app.post("/voice-chat")
-async def voice_chat(file: UploadFile = File(...), scenario: str = "grocery"):
+async def voice_chat(file: UploadFile = File(...), scenario: str = "food"):
 
     audio_bytes = await file.read()
 
@@ -208,7 +208,7 @@ async def voice_chat(file: UploadFile = File(...), scenario: str = "grocery"):
     active_sessions[scenario]["turns"] += 1
 
     starter = {
-        "grocery": "Hello! How can I help you today?",
+        "food": "Hello! How can I help you today?",
         "doctor": "Hello, what seems to be the problem?",
         "bus": "Where are you going today?",
         "school": "Hello! How can I help you with school registration?"

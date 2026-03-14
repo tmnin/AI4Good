@@ -230,8 +230,9 @@ You are a: {role}
 Rules:
 - Respond naturally in character first (1 short sentence).
 - Ask a simple follow-up question if appropriate.
-- Only give grammar correction if necessary.
-
+- If the sentence is unnatural or grammatically incorrect,
+provide a corrected sentence and encourage the learner
+to repeat it before continuing the conversation.
 Format exactly like:
 
 Response: <reply>
@@ -262,8 +263,12 @@ Correction: "<grammar correction>" OR null
     correction = None
     if "Correction:" in reply_raw:
         correction = reply_raw.split("Correction:")[1].strip()
-    conversation_memory.append({"role": "user", "content": user_text})
-    conversation_memory.append({"role": "assistant", "content": reply_text})
+    if correction and correction != "null":
+        # do NOT advance the conversation yet
+        reply_text = reply_text + " Try saying: " + correction
+    else:
+        conversation_memory.append({"role": "user", "content": user_text})
+        conversation_memory.append({"role": "assistant", "content": reply_text})
     conversation_memory[:] = conversation_memory[-10:]
 
     audio_buffer = io.BytesIO()

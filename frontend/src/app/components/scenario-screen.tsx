@@ -56,9 +56,9 @@ export function ScenarioScreen({ type }: ScenarioScreenProps) {
     ? scenarios.findIndex((scenario) => scenario.id === selectedScenario.id)
     : -1;
 
-  // Auto-select first scenario for emergency and speak modes
+  // Auto-select first scenario for speak mode
   useEffect(() => {
-    if ((type === "emergency" || type === "speak") && scenarios.length > 0) {
+    if (type === "speak" && scenarios.length > 0) {
       setSelectedScenario(scenarios[0]);
     }
   }, [type, scenarios]);
@@ -105,12 +105,6 @@ export function ScenarioScreen({ type }: ScenarioScreenProps) {
       <div className="flex-1 bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-950 dark:to-gray-900 p-8 overflow-auto">
         <div className="max-w-7xl mx-auto">
           <h1 className="text-5xl font-bold text-gray-900 dark:text-white mb-4">
-            {type === "emergency" && (
-              <span className="inline-flex items-center gap-3">
-                <AlertTriangle className="w-10 h-10" />
-                {/* <span>Emergency Phrases</span> */}
-              </span>
-            )}
             {type === "speak" && (
               <span className="inline-flex items-center gap-3">
                 <Mic className="w-10 h-10" />
@@ -118,11 +112,7 @@ export function ScenarioScreen({ type }: ScenarioScreenProps) {
               </span>
             )}
           </h1>
-          {/* <p className="text-xl text-gray-600 dark:text-gray-400 mb-8">
-            Choose a scenario to practice
-          </p> */}
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-6">
             {scenarios.map((scenario) => {
               const ScenarioIcon =
                 scenarioIcons[scenario.icon] ?? MessageCircle;
@@ -184,8 +174,8 @@ export function ScenarioScreen({ type }: ScenarioScreenProps) {
   return (
     <div className="flex-1 bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-950 dark:to-gray-900 p-8 overflow-auto">
       <div className="max-w-7xl mx-auto">
-        {/* Back Button - Only show for practice scenarios */}
-        {type === "practice" && (
+        {/* Back Button - Show for selectable scenario lists */}
+        {(type === "practice" || type === "emergency") && (
           <button
             onClick={() => {
               setSelectedScenario(null);
@@ -246,7 +236,7 @@ export function ScenarioScreen({ type }: ScenarioScreenProps) {
               <div className="relative">
                 {isReady && !isListening && (
                   <motion.div
-                    className="absolute inset-0 rounded-full bg-indigo-400/30"
+                    className="absolute inset-0 rounded-full"
                     animate={{
                       scale: [1, 1.5, 1],
                       opacity: [0.6, 0, 0.6],
@@ -265,7 +255,7 @@ export function ScenarioScreen({ type }: ScenarioScreenProps) {
                     isListening
                       ? "bg-red-500 hover:bg-red-600"
                       : isReady
-                      ? "bg-indigo-600 hover:bg-indigo-700"
+                      ? "bg-yellow-500 hover:bg-yellow-700"
                       : "bg-gray-400"
                   }`}
                   whileTap={{ scale: 0.9 }}
@@ -286,7 +276,7 @@ export function ScenarioScreen({ type }: ScenarioScreenProps) {
               {[...Array(60)].map((_, i) => (
                 <motion.div
                   key={i}
-                  className="w-1 bg-indigo-500 dark:bg-indigo-400 rounded-full"
+                  className="w-1 bg-yellow-500 dark:bg-yellow-400 rounded-full"
                   animate={{
                     height: ["8px", "48px", "8px"],
                   }}

@@ -5,305 +5,100 @@
       "icon": "Bus",
       "title": "Bus",
       "description": "Learn how to navigate public transportation",
-      "image": "https://images.unsplash.com/photo-1543698376-9c76b08cd35d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwdWJsaWMlMjBidXMlMjB0cmFuc3BvcnRhdGlvbnxlbnwxfHx8fDE3NzM0ODcwMTB8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-      "situations": [
-        "Which bus to take",
-        "If it goes somewhere (e.g., hospital)",
-        "Ask the driver to stop",
-        "Ask where is the next stop",
-        "Ask the driver to wait (stroller)"
-      ],
-      "phrases": [
-        {
-          "rohingya": "Eáin bus hospital zaa?",
-          "english": "Does this bus go to the hospital?"
-        },
-        {
-          "rohingya": "Next stop kóillar?",
-          "english": "Where is the next stop?"
-        },
-        {
-          "rohingya": "Thamén, aijja stroller asé",
-          "english": "Please wait, I have a stroller"
-        }
-      ]
+      "image": "https://www.urbantransportgroup.org/sites/default/files/styles/content_width/public/2023-06/Young%20girl%20listening%20to%20music%20on%20bus%20-%20blog%20size.png?itok=_Yvda16F"
     },
     {
       "id": "doctor",
       "icon": "Hospital",
       "title": "Doctor",
       "description": "Communicate health concerns and medical needs",
-      "image": "https://images.unsplash.com/photo-1769147555720-71fc71bfc216?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxob3NwaXRhbCUyMGJ1aWxkaW5nJTIwbWVkaWNhbHxlbnwxfHx8fDE3NzM0OTk3MDl8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-      "situations": [
-        "Describing symptoms for you or a child",
-        "When to come back",
-        "Ask for a female doctor",
-        "Ask if insurance is needed"
-      ],
-      "phrases": [
-        {
-          "rohingya": "Aijjar fua bemar asé",
-          "english": "My child is sick"
-        },
-        {
-          "rohingya": "Maáiya doctor lagé",
-          "english": "I need a female doctor"
-        },
-        {
-          "rohingya": "Insurance loijje?",
-          "english": "Do I need insurance?"
-        }
-      ]
+      "image": "https://www.ouehealthcare.com/images/banner-myanmar.jpg"
     },
     {
       "id": "medicine",
       "icon": "Pill",
       "title": "Medicine",
       "description": "Get medication and understand dosage instructions",
-      "image": "https://images.unsplash.com/photo-1646392206581-2527b1cae5cb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtZWRpY2luZSUyMHBpbGxzJTIwcGhhcm1hY3l8ZW58MXx8fHwxNzczNDk5NzEwfDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-      "situations": [
-        "Ask for medicine",
-        "How often to take medicine",
-        "Ask if it is safe for a child"
-      ],
-      "phrases": [
-        {
-          "rohingya": "Aijja óttu din kóiyam?",
-          "english": "How many days should I take this?"
-        },
-        {
-          "rohingya": "Fuain loi safe?",
-          "english": "Is it safe for children?"
-        },
-        {
-          "rohingya": "Din ot bar kain loijje?",
-          "english": "How many times per day?"
-        }
-      ]
+      "image": "https://images.unsplash.com/photo-1646392206581-2527b1cae5cb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtZWRpY2luZSUyMHBpbGxzJTIwcGhhcm1hY3l8ZW58MXx8fHwxNzczNDk5NzEwfDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
     },
     {
       "id": "food",
       "icon": "ShoppingCart",
       "title": "Shopping",
       "description": "Shop for groceries and find what you need",
-      "image": "https://images.unsplash.com/photo-1545186182-9faaf78480b8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxncm9jZXJ5JTIwc3RvcmUlMjBzaG9wcGluZ3xlbnwxfHx8fDE3NzM0ODc5ODB8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-      "situations": [
-        "Where something is",
-        "What's the price",
-        "If something is halal",
-        "Ask for fish, rice, lentils"
-      ],
-      "phrases": [
-        {
-          "rohingya": "Ítaor dam kélla?",
-          "english": "How much is this?"
-        },
-        {
-          "rohingya": "Eán halal?",
-          "english": "Is this halal?"
-        },
-        {
-          "rohingya": "Mas kóillar?",
-          "english": "Where is the fish?"
-        }
-      ]
+      "image": "https://images.unsplash.com/photo-1545186182-9faaf78480b8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxncm9jZXJ5JTIwc3RvcmUlMjBzaG9wcGluZ3xlbnwxfHx8fDE3NzM0ODc5ODB8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
     },
     {
       "id": "work",
       "icon": "Briefcase",
       "title": "Work",
       "description": "Communicate with your employer and coworkers",
-      "image": "https://images.unsplash.com/photo-1729368112752-352c47d929f6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjb25zdHJ1Y3Rpb24lMjB3b3JrZXIlMjB3b3JrcGxhY2V8ZW58MXx8fHwxNzczNDk5NzEwfDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-      "situations": [
-        "Ask about shift time",
-        "Say you are sick",
-        "Tell boss you will be late"
-      ],
-      "phrases": [
-        {
-          "rohingya": "Aijjar shift kílla somot?",
-          "english": "What time is my shift?"
-        },
-        {
-          "rohingya": "Aijja bemar, aijjum nofaróm",
-          "english": "I am sick, I cannot come"
-        },
-        {
-          "rohingya": "Aijja late óibom",
-          "english": "I will be late"
-        }
-      ]
+      "image": "https://careerwise.ceric.ca/wp-content/uploads/2020/06/cultural-intelligence-750x450.jpg"
     },
     {
       "id": "house",
       "icon": "Home",
       "title": "House & Home",
       "description": "Discuss housing matters with landlord",
-      "image": "https://images.unsplash.com/photo-1613029559447-6d0375921ca1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxhcGFydG1lbnQlMjBob3VzZSUyMHJlbnRhbHxlbnwxfHx8fDE3NzM0OTk3MTF8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-      "situations": [
-        "Ask about rent",
-        "Heating issues",
-        "Laundry questions",
-        "Say something is broken (door, sink)",
-        "Where to put garbage"
-      ],
-      "phrases": [
-        {
-          "rohingya": "Rent kélla?",
-          "english": "How much is the rent?"
-        },
-        {
-          "rohingya": "Darwaza bhangaigói",
-          "english": "The door is broken"
-        },
-        {
-          "rohingya": "Garbage kóillar félum?",
-          "english": "Where do I put the garbage?"
-        }
-      ]
+      "image": "https://www.landmarkhomes.ca//images/model/gallery-exteriors/fortgext20240723074346464-raw.webp"
     },
     {
       "id": "school",
       "icon": "GraduationCap",
       "title": "School",
       "description": "Talk to teachers about your child's education",
-      "image": "https://images.unsplash.com/photo-1597743622436-c6b5661731e0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzY2hvb2wlMjBjbGFzc3Jvb20lMjBjaGlsZHJlbnxlbnwxfHx8fDE3NzM0OTk3MTF8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-      "situations": [
-        "Talk to teacher",
-        "Ask about homework (child was absent)",
-        "Say child is sick",
-        "Ask when school starts",
-        "Ask about school lunch"
-      ],
-      "phrases": [
-        {
-          "rohingya": "Aijjar fua bemar asíl",
-          "english": "My child was sick"
-        },
-        {
-          "rohingya": "Ki homework asíl?",
-          "english": "What was the homework?"
-        },
-        {
-          "rohingya": "School lunch kélla dam?",
-          "english": "How much is school lunch?"
-        }
-      ]
+      "image": "https://images.unsplash.com/photo-1597743622436-c6b5661731e0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzY2hvb2wlMjBjbGFzc3Jvb20lMjBjaGlsZHJlbnxlbnwxfHx8fDE3NzM0OTk3MTF8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
     },
     {
       "id": "bank",
       "icon": "Banknote",
       "title": "Bank",
       "description": "Handle banking and money transfers",
-      "image": "https://images.unsplash.com/photo-1770359718280-817b01057e02?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxiYW5rJTIwYnVpbGRpbmclMjBmaW5hbmNlfGVufDF8fHx8MTc3MzQ5OTcxMXww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-      "situations": [
-        "Ask how to open account",
-        "Send money home",
-        "Ask about transfer fees",
-        "Ask about balance"
-      ],
-      "phrases": [
-        {
-          "rohingya": "Account kisén khulóm?",
-          "english": "How do I open an account?"
-        },
-        {
-          "rohingya": "Gór féloi taka pathám?",
-          "english": "Can I send money home?"
-        },
-        {
-          "rohingya": "Transfer fee kélla?",
-          "english": "What is the transfer fee?"
-        }
-      ]
+      "image": "https://www.bankrate.com/2023/09/15163502/what-is-fiat-money.jpeg?auto=webp&optimize=high&crop=16:9"
     },
     {
       "id": "community",
       "icon": "Landmark",
       "title": "Community",
       "description": "Find community resources and places",
-      "image": "https://images.unsplash.com/photo-1768152858332-3a9d4686bc03?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb3NxdWUlMjBpc2xhbWljJTIwY29tbXVuaXR5fGVufDF8fHx8MTc3MzQ5OTcxMnww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-      "situations": [
-        "Ask where is the mosque",
-        "Where is the bathroom",
-        "Help finding a women's center"
-      ],
-      "phrases": [
-        {
-          "rohingya": "Mosjid kóillar?",
-          "english": "Where is the mosque?"
-        },
-        {
-          "rohingya": "Bathroom kóillar?",
-          "english": "Where is the bathroom?"
-        },
-        {
-          "rohingya": "Women center kóillar asé?",
-          "english": "Where is the women's center?"
-        }
-      ]
+      "image": "https://images.unsplash.com/photo-1768152858332-3a9d4686bc03?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb3NxdWUlMjBpc2xhbWljJTIwY29tbXVuaXR5fGVufDF8fHx8MTc3MzQ5OTcxMnww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
     },
     {
       "id": "restaurant",
       "icon": "Utensils",
       "title": "Restaurant",
       "description": "Order food and drinks at restaurants",
-      "image": "https://images.unsplash.com/photo-1762922425226-8cfe6987e7b0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxyZXN0YXVyYW50JTIwZGluaW5nJTIwZm9vZHxlbnwxfHx8fDE3NzM0MTgxMzl8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-      "situations": [
-        "Ordering food",
-        "Asking price",
-        "Ask if food is halal",
-        "Ordering a coffee",
-        "Ask for water"
-      ],
-      "phrases": [
-        {
-          "rohingya": "Menu dekáiyen",
-          "english": "Show me the menu"
-        },
-        {
-          "rohingya": "Eán halal?",
-          "english": "Is this halal?"
-        },
-        {
-          "rohingya": "Ek glass fani den",
-          "english": "Give me one glass of water"
-        }
-      ]
+      "image": "https://i0.wp.com/rohingyakhobor.com/wp-content/uploads/2022/09/IMG_20220929_182029.jpg?fit=418%2C191&ssl=1"
     }
   ],
   "emergency": [
     {
-      "id": "emergency-help",
+      "id": "call-911",
       "icon": "AlertTriangle",
-      "title": "Emergency",
-      "description": "Critical phrases for urgent situations",
-      "image": "https://images.unsplash.com/photo-1765752926933-d6a68a4f29e2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxlbWVyZ2VuY3klMjBhbWJ1bGFuY2UlMjB1cmdlbnR8ZW58MXx8fHwxNzczNDk5NzEzfDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-      "situations": [
-        "Call for help",
-        "Medical emergency",
-        "Fire emergency",
-        "Police needed",
-        "Lost child"
-      ],
-      "phrases": [
-        {
-          "rohingya": "Mudóot loijje!",
-          "english": "Help needed!"
-        },
-        {
-          "rohingya": "Ambulance dhaará!",
-          "english": "Call an ambulance!"
-        },
-        {
-          "rohingya": "Police dhaará!",
-          "english": "Call the police!"
-        },
-        {
-          "rohingya": "Aijjar fua aráigói",
-          "english": "My child is lost"
-        }
-      ]
+      "title": "911 Call",
+      "description": "Report an emergency and share your location",
+      "image": "https://images.squarespace-cdn.com/content/v1/51dc541ce4b03ebab8c5c88c/1472239169814-XBT5J2JNIYW8B3BSX5F7/image-asset.jpeg"
+    },
+    {
+      "id": "police",
+      "icon": "Landmark",
+      "title": "Police",
+      "description": "Ask for police assistance and report danger",
+      "image": "https://cdnuploads.aa.com.tr/uploads/Contents/2019/10/02/thumbs_b_c_b04684d24875c757263c267ee4b21589.jpg?v=160030"
+    },
+    {
+      "id": "hospital-emergency",
+      "icon": "Hospital",
+      "title": "Hospital",
+      "description": "Get urgent medical care",
+      "image": "https://proambri.com/wp-content/uploads/2024/05/Ambulance-On-Street.jpg"
+    },
+    {
+      "id": "shelter",
+      "icon": "Home",
+      "title": "Shelter",
+      "description": "Find a safe place to stay",
+      "image": "https://annualreport.islamic-relief.org/2021/wp-content/uploads/2020/11/Myanmar-shelter-.jpg"
     }
   ],
   "speak": [
@@ -312,27 +107,7 @@
       "icon": "MessageCircle",
       "title": "Free Conversation",
       "description": "Practice speaking freely in any situation",
-      "image": "https://images.unsplash.com/photo-1753351055355-817db536858c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxmcmllbmRseSUyMHBlcnNvbiUyMGdyZWV0aW5nJTIwaGVsbG98ZW58MXx8fHwxNzczNDk4OTQzfDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-      "situations": [
-        "Speak naturally",
-        "Practice pronunciation",
-        "Get AI feedback",
-        "Build confidence"
-      ],
-      "phrases": [
-        {
-          "rohingya": "Assalamu Alaikum",
-          "english": "Peace be upon you"
-        },
-        {
-          "rohingya": "Tui kisén asós?",
-          "english": "How are you?"
-        },
-        {
-          "rohingya": "Aijja bála ái",
-          "english": "I am fine"
-        }
-      ]
+      "image": "https://ahead-app.com/_next/image?url=https%3A%2F%2Fstorage.googleapis.com%2Fweb-api-media-uploads%2Fmedia%2Ftmp5b6yvk60_c7e7afb929%2Ftmp5b6yvk60_c7e7afb929.png&w=3840&q=75"
     }
   ]
 }

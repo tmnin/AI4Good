@@ -154,9 +154,6 @@ export function ScenarioScreen({ type }: ScenarioScreenProps) {
         
         if (type === "speak" && data.phrase) {
            setSuggestedPhrase(data.phrase);
-        } else if (data.correction && data.correction !== "null") {
-           // Original behavior for voice-chat
-           alert("Try saying: " + data.correction);
         }
 
         if (data.audio) {

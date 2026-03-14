@@ -2,6 +2,8 @@
 
 A voice-first learning app that helps Rohingya newcomers practice real-life English through guided roleplay scenarios (bus, doctor, grocery, school, and more).
 
+The description can be found at [Notion | Kotha.ai](https://www.notion.so/monmon12/Kotha-ai-323c27f04884800a9c17d069886a9d6b)
+
 ---
 
 ## Project Structure
@@ -101,20 +103,6 @@ Open `http://localhost:5173` in your browser.
 ---
 
 ## Main API Endpoints
-
-### Health
-
-```http
-GET /health
-```
-
-Response:
-
-```json
-{
-	"status": "ok"
-}
-```
 
 ### Text-to-Speech (TTS)
 

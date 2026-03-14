@@ -307,27 +307,6 @@ export function ScenarioScreen({ type }: ScenarioScreenProps) {
         )}
 
         {/* Content specific to speak mode vs scenario mode */}
-        {type === "speak" ? (
-          <div>
-            <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-3">
-              <Mic className="w-8 h-8 text-yellow-500" />
-              <span>Live Phrase Assistant</span>
-            </h1>
-            <p className="text-lg text-gray-600 dark:text-gray-400 mb-8">
-              Speak Rohingya or broken English, and I will give you the exact English phrase you need right now.
-            </p>
-          </div>
-        ) : (
-          <div>
-             <h1 className="text-5xl font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-3">
-               <SelectedScenarioIcon className="w-10 h-10" />
-               <span>{selectedScenario.title}</span>
-             </h1>
-             <p className="text-xl text-gray-600 dark:text-gray-400 mb-8">
-               {selectedScenario.description}
-             </p>
-          </div>
-        )}
         {type === "practice" && (
           <div className="flex items-center justify-between mb-6">
             <div className="text-sm text-gray-500 dark:text-gray-400">

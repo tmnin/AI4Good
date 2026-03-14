@@ -103,6 +103,24 @@ export function ScenarioScreen({ type }: ScenarioScreenProps) {
     AlertTriangle,
     MessageCircle,
   };
+
+  const rohingyaNames: Record<string, string> = {
+    bus: "Baas",
+    doctor: "Daktar",
+    medicine: "Dawai",
+    food: "Khabar",
+    work: "Kaam",
+    house: "Ghor",
+    school: "School",
+    bank: "Bank",
+    community: "Jamaat",
+    restaurant: "Hotel",
+    "call-911": "Joruri phone",
+    police: "Police",
+    "hospital-emergency": "Hospital",
+    shelter: "Ashroy",
+    "free-conversation": "Kotha"
+  }
   const selectedScenarioIcon = selectedScenario
     ? scenarioIcons[selectedScenario.icon] ?? MessageCircle
     : MessageCircle;
@@ -110,6 +128,24 @@ export function ScenarioScreen({ type }: ScenarioScreenProps) {
   const selectedIndex = selectedScenario
     ? scenarios.findIndex((scenario) => scenario.id === selectedScenario.id)
     : -1;
+
+  function speakCategory(rohingya: string, english: string) {
+      speechSynthesis.cancel()
+
+      const roh = new SpeechSynthesisUtterance(rohingya)
+      roh.lang = "en-US"
+      roh.rate = 0.9
+
+      const eng = new SpeechSynthesisUtterance(english)
+      eng.lang = "en-US"
+      eng.rate = 0.9
+
+      roh.onend = () => {
+        speechSynthesis.speak(eng)
+      }
+
+      speechSynthesis.speak(roh)
+  }
 
   // Auto-select first scenario for speak mode
   useEffect(() => {
@@ -185,7 +221,13 @@ export function ScenarioScreen({ type }: ScenarioScreenProps) {
               return (
                 <button
                   key={scenario.id}
-                  onClick={() => setSelectedScenario(scenario)}
+                  onClick={() => {
+                    speakCategory(
+                      rohingyaNames[scenario.id] || scenario.title,
+                      scenario.title
+                    )
+                    setSelectedScenario(scenario)
+                  }}
                   className="group bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 hover:scale-105 text-left"
                 >
                   <div className="relative h-48 overflow-hidden">

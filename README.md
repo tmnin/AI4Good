@@ -1,4 +1,4 @@
-# 🎙️ AI4Good — Rohingya Conversation Coach
+# Kotha.ai — Rohingya Conversation Coach
 
 A voice-first learning app that helps Rohingya newcomers practice real-life English through guided roleplay scenarios (bus, doctor, grocery, school, and more).
 

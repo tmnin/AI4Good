@@ -33,5 +33,41 @@
       "A parent asks where the classroom is.",
       "Someone asks about school hours."
     ]
+  },
+
+  "emergency": {
+    "role": "emergency 911 dispatcher",
+    "situations": [
+      "A caller reports a fire in their building and needs help.",
+      "A caller says someone has collapsed and is unresponsive.",
+      "A caller reports a car accident and needs an ambulance."
+    ]
+  },
+
+  "police": {
+    "role": "police officer",
+    "situations": [
+      "Someone reports that their bag or wallet was stolen.",
+      "Someone is lost and needs help finding their address.",
+      "Someone wants to report a suspicious person near their home."
+    ]
+  },
+
+  "hospital": {
+    "role": "hospital emergency room nurse",
+    "situations": [
+      "A patient arrives with chest pain and needs to be checked in.",
+      "A parent brings a child with a high fever to the ER.",
+      "Someone arrives after a fall and thinks they may have broken a bone."
+    ]
+  },
+
+  "shelter": {
+    "role": "emergency shelter staff",
+    "situations": [
+      "A family arrives at a shelter after fleeing a dangerous situation.",
+      "Someone asks if the shelter has space for them and their children.",
+      "Someone asks about food, blankets, and sleeping arrangements at the shelter."
+    ]
   }
 }

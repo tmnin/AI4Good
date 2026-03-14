@@ -50,11 +50,6 @@ async function stopRecording(scenario: string) {
     audio.onended = () => URL.revokeObjectURL(audioUrl)
 
     await audio.play()
-
-    if (correction && correction !== "null") {
-      alert("Try saying: " + correction)
-    }
-
   }
 }
 

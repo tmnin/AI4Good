@@ -276,7 +276,7 @@ Correction: "<grammar correction>" OR null
         correction = reply_raw.split("Correction:")[1].strip()
     if correction and correction != "null":
         # do NOT advance the conversation yet
-        reply_text = reply_text + " Try saying: " + correction
+        reply_text = " Try saying: " + correction + ". " + reply_text
     else:
         conversation_memory.append({"role": "user", "content": user_text})
         conversation_memory.append({"role": "assistant", "content": reply_text})

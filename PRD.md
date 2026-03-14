@@ -168,6 +168,41 @@ SCENARIO_INTRO → AI_TURN → USER_TURN → PROCESSING → [CORRECTION_LOOP] �
 
 ---
 
+## Live Phrase Assistant (Stretch Feature)
+
+A persistent tab the user can keep open **during a real conversation** (e.g. at a grocery store, doctor's office). When they forget an English word or phrase mid-sentence, they tap the mic, say what they need **in Rohingya**, and the app speaks back the completed English phrase they should say.
+
+### How It Works
+
+1. User is mid-conversation in real life and gets stuck
+2. They tap the mic in the Live Phrase Assistant tab
+3. They say something in Rohingya (e.g. *"how do I ask where the fish is?"*)
+4. Whisper transcribes it; LLM detects it's Rohingya and infers English intent
+5. App speaks back a short, ready-to-say English phrase (e.g. *"Can you show me where the fish is?"*)
+6. User repeats it to the person they're talking to
+
+### Endpoint
+
+```
+POST /phrase-assist
+Body: audio file
+Returns: audio/mpeg — a single English phrase, spoken aloud
+```
+
+### LLM Prompt Behavior
+- Detect if input is Rohingya, broken English, or English
+- Infer what the user is trying to say or ask
+- Return **one short, natural English sentence** the user can repeat right now
+- Do not explain, do not correct — just give the phrase
+
+### UI
+- Separate tab or page from the scenario practice mode
+- Always-available mic button — tap to ask, releases when done
+- No text shown — audio response only
+- Should feel instant (low latency priority)
+
+---
+
 ## Out of Scope (MVP)
 
 - Session history / progress tracking

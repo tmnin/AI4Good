@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<body style="font-family: sans-serif; text-align: center; padding: 40px; background: #111; color: #fff;">
+
+<h2>🎙️ Live Phrase Assistant</h2>
+<p style="color: #aaa;">Forget a word? Tap, speak in Rohingya or English, and hear the phrase to say.</p>
+
+<br>
+
+<button id="micBtn" onclick="toggle()"
+  style="font-size: 48px; border: none; background: #222; border-radius: 50%;
+         width: 120px; height: 120px; cursor: pointer; transition: background 0.2s;">
+  🎙️
+</button>
+
+<p id="status" style="color: #888; margin-top: 20px;">Tap to speak</p>
+
+<script>
+
+let recorder
+let chunks = []
+let recording = false
+
+async function toggle() {
+    if (!recording) {
+        await startRecording()
+    } else {
+        stopRecording()
+    }
+}
+
+async function startRecording() {
+    chunks = []
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+    recorder = new MediaRecorder(stream)
+    recorder.ondataavailable = e => chunks.push(e.data)
+    recorder.start()
+    recording = true
+    document.getElementById("micBtn").style.background = "#c00"
+    document.getElementById("status").textContent = "Listening... tap to stop"
+}
+
+function stopRecording() {
+    recorder.stop()
+    recording = false
+    document.getElementById("micBtn").style.background = "#222"
+    document.getElementById("status").textContent = "Thinking..."
+
+    recorder.onstop = async () => {
+        const blob = new Blob(chunks, { type: "audio/webm" })
+        const form = new FormData()
+        form.append("file", blob, "audio.webm")
+
+        try {
+            const res = await fetch("http://127.0.0.1:8000/phrase-assist", {
+                method: "POST",
+                body: form
+            })
+
+            const audioBlob = await res.blob()
+            const audioUrl = URL.createObjectURL(audioBlob)
+            const audio = new Audio(audioUrl)
+            audio.play()
+            document.getElementById("status").textContent = "Tap to speak"
+        } catch (e) {
+            document.getElementById("status").textContent = "Error — is the server running?"
+        }
+    }
+}
+
+</script>
+
+</body>
+</html>

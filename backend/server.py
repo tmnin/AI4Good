@@ -236,6 +236,65 @@ def speak(req: SpeakRequest):
     
     return StreamingResponse(mp3_fp, media_type="audio/mpeg")
 
+@app.get("/phrase")
+def serve_phrase():
+    return FileResponse("phrase.html")
+
+@app.post("/phrase-assist")
+async def phrase_assist(file: UploadFile = File(...)):
+
+    # 1. transcribe audio
+    audio_bytes = await file.read()
+    transcription = get_client().audio.transcriptions.create(
+        model="whisper-large-v3",
+        file=("speech.wav", audio_bytes)
+    )
+    user_input = transcription.text
+
+    print("PHRASE INPUT:", user_input)
+
+    # 2. ask LLM for one English phrase
+    response = get_client().chat.completions.create(
+        model=MODEL,
+        temperature=0.3,
+        messages=[
+            {
+                "role": "system",
+                "content": """You are an instant English phrase assistant for a Rohingya refugee.
+
+The user may speak in Rohingya, broken English, or English.
+They are in a real-world conversation right now and need help finishing a sentence.
+
+Your job:
+- Infer exactly what English phrase they need to say RIGHT NOW
+- Return ONLY that one short, natural English sentence — nothing else
+- No explanation, no greeting, no correction, no alternatives
+- The phrase must be ready to repeat immediately to another person
+
+Examples:
+Input: "where fish" → Output: "Can you show me where the fish is?"
+Input: "bus hospital?" → Output: "Does this bus go to the hospital?"
+Input: (Rohingya for "I need a doctor") → Output: "I need to see a doctor, please."
+"""
+            },
+            {
+                "role": "user",
+                "content": user_input
+            }
+        ]
+    )
+
+    phrase = response.choices[0].message.content.strip()
+    print("PHRASE OUTPUT:", phrase)
+
+    # 3. text → speech
+    mp3_fp = io.BytesIO()
+    tts = gTTS(text=phrase, lang="en", slow=False)
+    tts.write_to_fp(mp3_fp)
+    mp3_fp.seek(0)
+
+    return StreamingResponse(mp3_fp, media_type="audio/mpeg")
+
 @app.post("/voice-chat")
 async def voice_chat(file: UploadFile = File(...), scenario: str = "grocery"):
 

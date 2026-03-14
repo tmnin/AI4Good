@@ -284,4 +284,8 @@ Correction: "<grammar correction>" OR null
 
     audio_buffer.seek(0)
 
-    return StreamingResponse(audio_buffer, media_type="audio/mpeg")
+    return {
+        "reply": reply_text,
+        "correction": correction,
+        "audio": audio_buffer.getvalue().hex()
+    }

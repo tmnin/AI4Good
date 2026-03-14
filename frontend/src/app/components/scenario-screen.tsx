@@ -32,8 +32,17 @@ async function stopRecording(scenario: string) {
       body: form
     })
 
-    const audioBlob = await res.blob()
+    const data = await res.json()
 
+    const reply = data.reply
+    const correction = data.correction
+    const audioHex = data.audio
+
+    const audioBytes = new Uint8Array(
+      audioHex.match(/.{1,2}/g).map((byte: string) => parseInt(byte, 16))
+    )
+
+    const audioBlob = new Blob([audioBytes], { type: "audio/mpeg" })
     const audioUrl = URL.createObjectURL(audioBlob)
 
     const audio = new Audio(audioUrl)
@@ -41,6 +50,11 @@ async function stopRecording(scenario: string) {
     audio.onended = () => URL.revokeObjectURL(audioUrl)
 
     await audio.play()
+
+    if (correction && correction !== "null") {
+      alert("Try saying: " + correction)
+    }
+
   }
 }
 

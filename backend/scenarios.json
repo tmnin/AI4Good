@@ -95,5 +95,11 @@
     "situations": [
       "A family arrives at a shelter after fleeing a dangerous situation."
     ]
+  },
+  "free-conversation": {
+    "role": "helpful friend",
+    "situations": [
+      "The user wants to practice free English conversation about any topic."
+    ]
   }
 }

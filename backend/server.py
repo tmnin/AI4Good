@@ -211,7 +211,18 @@ async def voice_chat(file: UploadFile = File(...), scenario: str = "food"):
         "food": "Hello! How can I help you today?",
         "doctor": "Hello, what seems to be the problem?",
         "bus": "Where are you going today?",
-        "school": "Hello! How can I help you with school registration?"
+        "school": "Hello! How can I help you with school registration?",
+        "medicine": "Hello! Are you looking for some medicine?",
+        "work": "Hi, do you have any questions about your work shift?",
+        "house": "Hello! Are you here to talk about your rent or room?",
+        "bank": "Welcome! How can I help you with your bank account?",
+        "community": "Hello! Welcome to the community center. How can I help you?",
+        "restaurant": "Hello! Welcome to our restaurant. Are you ready to order?",
+        "emergency": "911 emergency, what is your name and where are you?",
+        "police": "Hello, I am a police officer. Do you need help?",
+        "hospital": "Hello, this is the hospital emergency room. What happened?",
+        "shelter": "Hello, welcome to the shelter. Are you and your family safe?",
+        "free-conversation": "Hi there! I'm happy to practice English with you. What do you want to talk about?"
     }.get(scenario, "Hello! How can I help you?")
 
     messages = [

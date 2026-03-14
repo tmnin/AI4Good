@@ -325,7 +325,6 @@ Correction: "<grammar correction>" OR null
         model=MODEL,
         temperature=0.7,
         messages=messages,
-        response_format={"type": "json_object"}
     )
 
     reply_text = response.choices[0].message.content.strip()

@@ -2,126 +2,98 @@
   "grocery": {
     "role": "grocery store worker",
     "situations": [
-      "A customer asks where to find rice, lentils, or fish.",
-      "A customer asks if a product is halal.",
-      "A customer asks the price of an item."
+      "A customer asks where to find rice, lentils, or fish."
     ]
   },
 
   "bus": {
     "role": "bus driver",
     "situations": [
-      "A passenger asks which bus goes to the hospital.",
-      "A passenger asks the driver to stop at the next stop.",
-      "A passenger with a stroller asks the driver to wait a moment before closing the doors."
+      "A passenger asks which bus goes to the hospital."
     ]
   },
 
   "doctor": {
     "role": "clinic doctor",
     "situations": [
-      "A patient is describing symptoms for themselves or their child.",
-      "A patient asks when they should come back for a follow-up.",
-      "A patient asks to see a female doctor and asks if insurance is needed."
+      "A patient is describing symptoms for themselves or their child."
     ]
   },
 
   "school": {
     "role": "school teacher",
     "situations": [
-      "A parent asks what homework their child missed while absent.",
-      "A parent calls to say their child is sick and will not be in school today.",
-      "A parent asks when school starts and what is served for school lunch."
+      "A parent asks what homework their child missed while absent."
     ]
   },
 
   "medicine": {
     "role": "pharmacist",
     "situations": [
-      "A customer asks for medicine for a headache or fever.",
-      "A customer asks how often to take a medicine.",
-      "A customer asks if a medicine is safe for a young child."
+      "A customer asks for medicine for a headache or fever."
     ]
   },
 
   "work": {
     "role": "workplace supervisor",
     "situations": [
-      "A worker asks what time their shift starts.",
-      "A worker calls in to say they are sick and cannot come in today.",
-      "A worker calls to say they will be late and explains why."
+      "A worker asks what time their shift starts."
     ]
   },
 
   "house": {
     "role": "building landlord",
     "situations": [
-      "A tenant asks about the rent amount and when it is due.",
-      "A tenant says the heating is not working and asks for it to be fixed.",
-      "A tenant asks where to put the garbage and where the laundry room is."
+      "A tenant asks about the rent amount and when it is due."
     ]
   },
 
   "bank": {
     "role": "bank teller",
     "situations": [
-      "A customer asks how to open a bank account.",
-      "A customer asks how to send money to their family back home.",
-      "A customer asks about transfer fees and their current balance."
+      "A customer asks how to open a bank account."
     ]
   },
 
   "community": {
     "role": "community center staff",
     "situations": [
-      "Someone asks where the nearest mosque is.",
-      "Someone asks where the bathroom is in the community center.",
-      "Someone asks for help finding a women's center nearby."
+      "Someone asks where the nearest mosque is."
     ]
   },
 
   "restaurant": {
     "role": "restaurant server",
     "situations": [
-      "A customer orders food and asks if it is halal.",
-      "A customer asks the price of a dish on the menu.",
-      "A customer orders a coffee and asks for a glass of water."
+      "A customer orders food and asks if it is halal."
     ]
   },
 
   "emergency": {
     "role": "emergency 911 dispatcher",
     "situations": [
-      "A caller reports a fire in their building and needs help.",
-      "A caller says someone has collapsed and is unresponsive.",
-      "A caller reports a car accident and needs an ambulance."
+      "A caller reports a fire in their building and needs help."
     ]
   },
 
   "police": {
     "role": "police officer",
     "situations": [
-      "Someone reports that their bag or wallet was stolen.",
-      "Someone is lost and needs help finding their address.",
-      "Someone wants to report a suspicious person near their home."
+      "Someone reports that their bag or wallet was stolen."
     ]
   },
 
   "hospital": {
     "role": "hospital emergency room nurse",
     "situations": [
-      "A patient arrives with chest pain and needs to be checked in.",
-      "A parent brings a child with a high fever to the ER.",
-      "Someone arrives after a fall and thinks they may have broken a bone."
+      "A patient arrives with chest pain and needs to be checked in."
     ]
   },
 
   "shelter": {
     "role": "emergency shelter staff",
     "situations": [
-      "A family arrives at a shelter after fleeing a dangerous situation.",
-      "Someone asks if the shelter has space for them and their children.",
-      "Someone asks about food, blankets, and sleeping arrangements at the shelter."
+      "A family arrives at a shelter after fleeing a dangerous situation."
     ]
   }
 }

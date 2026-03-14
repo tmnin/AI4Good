@@ -132,13 +132,14 @@ You are playing the role of: {scenario["role"]}
 
 You must output in valid JSON format matching this schema:
 {{
-  "understood": boolean, // false only if the speech is completely unintelligible
-  "was_clear": boolean, // false if they were understood but the English was broken or could be significantly improved
-  "character_response": string, // Your in-character response to the user's intent
-  "correction": string | null, // A suggested clearer phrase for the user to try, or null if was_clear is true
-  "session_end": boolean // true if this is the final wrap-up after about 4 exchanges
+  "understood": boolean,
+  "was_clear": boolean,
+  "character_response": string,
+  "correction": string | null,
+  "session_end": boolean
 }}
 """
+
     messages = [{"role": "system", "content": system_prompt}]
     messages.extend(req.history)
     messages.append({"role": "user", "content": req.user_text})
@@ -175,85 +176,22 @@ async def transcribe(file: UploadFile = File(...)):
 
     return {"text": response.text}
 
-@app.post("/voice-conversation")
-async def voice_conversation(file: UploadFile = File(...), scenario: str = "grocery"):
-
-    audio_bytes = await file.read()
-
-    # speech → text
-    stt = get_client().audio.transcriptions.create(
-        file=("speech.wav", audio_bytes),
-        model="whisper-large-v3"
-    )
-
-    user_text = stt.text
-
-    scenario_data = SCENARIOS.get(scenario)
-
-    situation = random.choice(scenario_data["situations"])
-
-    system_prompt = f"""
-You are helping a Rohingya refugee practice spoken English.
-
-They may speak broken English.
-
-Respond naturally and suggest a clearer sentence if needed.
-
-Scenario:
-{situation}
-
-You are playing: {scenario_data["role"]}
-
-Format:
-
-AI_REPLY: ...
-SUGGESTED_PHRASE: ...
-"""
-
-    response = get_client().chat.completions.create(
-        model=MODEL,
-        messages=[
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": user_text}
-        ]
-    )
-
-    return {
-        "user_text": user_text,
-        "response": response.choices[0].message.content
-    }
-
 # -----------------------------
-# Speak route
+# Voice conversation
 # -----------------------------
-
-@app.post("/speak")
-def speak(req: SpeakRequest):
-    tts = gTTS(text=req.text, lang='en')
-    mp3_fp = io.BytesIO()
-    tts.write_to_fp(mp3_fp)
-    mp3_fp.seek(0)
-    
-    return StreamingResponse(mp3_fp, media_type="audio/mpeg")
 
 @app.post("/voice-chat")
 async def voice_chat(file: UploadFile = File(...), scenario: str = "grocery"):
 
-    # 1. save audio
-    input_path = "input.wav"
-    with open(input_path, "wb") as f:
-        f.write(await file.read())
+    audio_bytes = await file.read()
 
-    # 2. speech → text
-    with open(input_path, "rb") as audio:
-        transcription = get_client().audio.transcriptions.create(
-            model="whisper-large-v3",
-            file=audio
-        )
+    transcription = get_client().audio.transcriptions.create(
+        file=("speech.webm", audio_bytes),
+        model="whisper-large-v3"
+    )
 
     user_text = transcription.text
 
-    # 3. load scenario
     scenario_data = SCENARIOS.get(scenario)
 
     if scenario_data is None:
@@ -270,81 +208,69 @@ async def voice_chat(file: UploadFile = File(...), scenario: str = "grocery"):
     active_sessions[scenario]["turns"] += 1
 
     starter = {
-    "grocery": "Hello! How can I help you today?",
-    "doctor": "Hello, what seems to be the problem?",
-    "bus": "Where are you going today?",
-    "school": "Hello! How can I help you with school registration?"
+        "grocery": "Hello! How can I help you today?",
+        "doctor": "Hello, what seems to be the problem?",
+        "bus": "Where are you going today?",
+        "school": "Hello! How can I help you with school registration?"
     }.get(scenario, "Hello! How can I help you?")
 
-    # 4. generate response
-    is_final_turn = active_sessions[scenario]["turns"] >= 3
-    
     messages = [
         {
             "role": "system",
             "content": f"""
-    You are helping a beginner practice spoken English through conversation.
+You are helping a beginner practice spoken English through conversation.
 
-    Scenario: {situation}
-    Final turn: {is_final_turn}
+Scenario: {situation}
 
-    The conversation begins with you saying:
-    "{starter}"
-    You are a: {role}
+The conversation begins with you saying:
+"{starter}"
 
-    The learner may speak in broken English.
+You are a: {role}
 
-   Rules:
-- This is a conversation between a worker and an English learner.
+Rules:
 - Respond naturally in character first (1 short sentence).
-- Then usually ask a simple follow-up question to continue the conversation.
-- Only give a grammar correction if the learner's sentence has a grammar mistake.
-- If the sentence is already correct, do NOT repeat it.
-- Keep responses very short and simple.
+- Ask a simple follow-up question if appropriate.
+- Only give grammar correction if necessary.
 
-Example:
-User: "where fish"
-Response: The fish is in aisle three.
+Format exactly like:
 
-Correction: "Where is the fish?"
-
-Format exactly like this:
-
-Response: <reply + optional question>
+Response: <reply>
 
 Correction: "<grammar correction>" OR null
-    """
+"""
         }
     ]
 
     messages.extend(conversation_memory)
-
     messages.append({"role": "user", "content": user_text})
 
     response = get_client().chat.completions.create(
         model=MODEL,
         temperature=0.7,
-        messages=messages,
+        messages=messages
     )
 
-    reply_text = response.choices[0].message.content.strip()
-    # normalize correction display
-    if "Correction: null" in reply_text:
-        reply_text = reply_text.replace("Correction: null", "")
-    if active_sessions[scenario]["turns"] >= 4:
-        del active_sessions[scenario]
+    reply_raw = response.choices[0].message.content.strip()
 
+    # extract only the spoken response
+    if "Response:" in reply_raw:
+        reply_text = reply_raw.split("Response:")[1].split("Correction:")[0].strip()
+    else:
+        reply_text = reply_raw
+
+    # keep correction internally but don't speak it
+    correction = None
+    if "Correction:" in reply_raw:
+        correction = reply_raw.split("Correction:")[1].strip()
     conversation_memory.append({"role": "user", "content": user_text})
     conversation_memory.append({"role": "assistant", "content": reply_text})
     conversation_memory[:] = conversation_memory[-10:]
 
-    print("USER:", user_text)
-    print("AI:", reply_text)
-
-    # 5. text → speech
-    output_file = "reply.mp3"
+    audio_buffer = io.BytesIO()
 
     tts = gTTS(text=reply_text, lang="en", slow=False)
-    tts.save(output_file)
-    # 5. return audio
-    return FileResponse(output_file, media_type="audio/mpeg")
+    tts.write_to_fp(audio_buffer)
+
+    audio_buffer.seek(0)
+
+    return StreamingResponse(audio_buffer, media_type="audio/mpeg")

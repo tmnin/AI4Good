@@ -1,18 +1,15 @@
-import json
-import random
-import os
-
-from fastapi import FastAPI
-from fastapi.responses import StreamingResponse
-from pydantic import BaseModel
-from dotenv import load_dotenv
-from openai import OpenAI
-from fastapi import UploadFile, File
-from fastapi.responses import StreamingResponse
 import io
+import json
+import os
+import random
 import subprocess
-from fastapi.responses import FileResponse
+
+from dotenv import load_dotenv
+from fastapi import FastAPI, File, UploadFile
+from fastapi.responses import FileResponse, StreamingResponse
 from gtts import gTTS
+from openai import OpenAI
+from pydantic import BaseModel
 
 # -----------------------------
 # Load environment

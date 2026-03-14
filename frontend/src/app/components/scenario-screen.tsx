@@ -105,28 +105,22 @@ export function ScenarioScreen({ type }: ScenarioScreenProps) {
       <div className="flex-1 bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-950 dark:to-gray-900 p-8 overflow-auto">
         <div className="max-w-7xl mx-auto">
           <h1 className="text-5xl font-bold text-gray-900 dark:text-white mb-4">
-            {type === "practice" && (
-              <span className="inline-flex items-center gap-3">
-                <MessageCircle className="w-10 h-10" />
-                <span>Practice Conversations</span>
-              </span>
-            )}
             {type === "emergency" && (
               <span className="inline-flex items-center gap-3">
                 <AlertTriangle className="w-10 h-10" />
-                <span>Emergency Phrases</span>
+                {/* <span>Emergency Phrases</span> */}
               </span>
             )}
             {type === "speak" && (
               <span className="inline-flex items-center gap-3">
                 <Mic className="w-10 h-10" />
-                <span>Free Speaking</span>
+                {/* <span>Free Speaking</span> */}
               </span>
             )}
           </h1>
-          <p className="text-xl text-gray-600 dark:text-gray-400 mb-8">
+          {/* <p className="text-xl text-gray-600 dark:text-gray-400 mb-8">
             Choose a scenario to practice
-          </p>
+          </p> */}
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {scenarios.map((scenario) => {
@@ -149,7 +143,7 @@ export function ScenarioScreen({ type }: ScenarioScreenProps) {
                       <div className="mb-2">
                         <ScenarioIcon className="w-10 h-10" />
                       </div>
-                      <div className="text-2xl font-bold">{scenario.title}</div>
+                      {/* <div className="text-2xl font-bold">{scenario.title}</div> */}
                     </div>
                   </div>
                   {/* <div className="p-6">
@@ -201,38 +195,40 @@ export function ScenarioScreen({ type }: ScenarioScreenProps) {
             className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white mb-6 transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
-            <span className="text-lg font-medium">Back to scenarios</span>
+            {/* <span className="text-lg font-medium">Back to scenarios</span> */}
           </button>
         )}
 
-        <h1 className="text-5xl font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-3">
+        {/* <h1 className="text-5xl font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-3">
           <SelectedScenarioIcon className="w-10 h-10" />
           <span>{selectedScenario.title}</span>
-        </h1>
+        </h1> */}
         {/* <p className="text-xl text-gray-600 dark:text-gray-400 mb-8">
           {selectedScenario.description}
         </p> */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="text-sm text-gray-500 dark:text-gray-400">
-            Scenario {selectedIndex + 1} of {scenarios.length}
+        {type === "practice" && (
+          <div className="flex items-center justify-between mb-6">
+            <div className="text-sm text-gray-500 dark:text-gray-400">
+              {selectedIndex + 1} / {scenarios.length}
+            </div>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => handleScenarioStep("prev")}
+                className="w-12 h-12 rounded-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex items-center justify-center"
+                title="Previous scenario"
+              >
+                <ArrowLeft className="w-5 h-5" />
+              </button>
+              <button
+                onClick={() => handleScenarioStep("next")}
+                className="w-12 h-12 rounded-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex items-center justify-center"
+                title="Next scenario"
+              >
+                <ArrowRight className="w-5 h-5" />
+              </button>
+            </div>
           </div>
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => handleScenarioStep("prev")}
-              className="w-12 h-12 rounded-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex items-center justify-center"
-              title="Previous scenario"
-            >
-              <ArrowLeft className="w-5 h-5" />
-            </button>
-            <button
-              onClick={() => handleScenarioStep("next")}
-              className="w-12 h-12 rounded-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex items-center justify-center"
-              title="Next scenario"
-            >
-              <ArrowRight className="w-5 h-5" />
-            </button>
-          </div>
-        </div>
+        )}
 
         {/* Full Width Image Card */}
         <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl overflow-hidden mb-8">

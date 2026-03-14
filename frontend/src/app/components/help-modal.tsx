@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect } from "react";
 import {
   Activity,
   AlertTriangle,
@@ -7,8 +7,8 @@ import {
   Mic,
   Volume2,
   X,
-} from 'lucide-react';
-import { motion } from 'motion/react';
+} from "lucide-react";
+import { motion } from "motion/react";
 
 interface HelpModalProps {
   onClose: () => void;
@@ -19,7 +19,8 @@ export function HelpModal({ onClose }: HelpModalProps) {
     // Play help audio in Rohingya when modal opens
     const audio = new Audio();
     // This would be actual Rohingya audio explaining the app
-    audio.src = 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBjGJ0fPTgjMGHm7A7+OZURE=';
+    audio.src =
+      "data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBjGJ0fPTgjMGHm7A7+OZURE=";
     audio.volume = 0.5;
     audio.play();
   }, []);
@@ -62,8 +63,12 @@ export function HelpModal({ onClose }: HelpModalProps) {
               <MessageCircle className="w-6 h-6" />
             </div>
             <div>
-              <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-1">Practice Conversations</h3>
-              <p className="text-gray-600 dark:text-gray-400">Learn common phrases and everyday conversations</p>
+              <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-1">
+                Practice
+              </h3>
+              <p className="text-gray-600 dark:text-gray-400">
+                Learn common phrases and everyday conversations
+              </p>
             </div>
           </div>
 
@@ -72,8 +77,12 @@ export function HelpModal({ onClose }: HelpModalProps) {
               <AlertTriangle className="w-6 h-6" />
             </div>
             <div>
-              <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-1">Emergency Phrases</h3>
-              <p className="text-gray-600 dark:text-gray-400">Important phrases for urgent situations</p>
+              <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-1">
+                Emergency Phrases
+              </h3>
+              <p className="text-gray-600 dark:text-gray-400">
+                Important phrases for urgent situations
+              </p>
             </div>
           </div>
 
@@ -82,8 +91,12 @@ export function HelpModal({ onClose }: HelpModalProps) {
               <Mic className="w-6 h-6" />
             </div>
             <div>
-              <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-1">Free Speaking</h3>
-              <p className="text-gray-600 dark:text-gray-400">Practice speaking freely in Rohingya</p>
+              <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-1">
+                Free Speaking
+              </h3>
+              <p className="text-gray-600 dark:text-gray-400">
+                Practice speaking freely in Rohingya
+              </p>
             </div>
           </div>
 
@@ -92,8 +105,12 @@ export function HelpModal({ onClose }: HelpModalProps) {
               <Activity className="w-6 h-6" />
             </div>
             <div>
-              <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-1">When Pulsing</h3>
-              <p className="text-gray-600 dark:text-gray-400">Tap microphone when you see pulsing circles and hear the beep</p>
+              <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-1">
+                When Pulsing
+              </h3>
+              <p className="text-gray-600 dark:text-gray-400">
+                Tap microphone when you see pulsing circles and hear the beep
+              </p>
             </div>
           </div>
 
@@ -102,8 +119,12 @@ export function HelpModal({ onClose }: HelpModalProps) {
               <Volume2 className="w-6 h-6" />
             </div>
             <div>
-              <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-1">Listen & Repeat</h3>
-              <p className="text-gray-600 dark:text-gray-400">Tap any phrase to hear pronunciation, then repeat</p>
+              <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-1">
+                Listen & Repeat
+              </h3>
+              <p className="text-gray-600 dark:text-gray-400">
+                Tap any phrase to hear pronunciation, then repeat
+              </p>
             </div>
           </div>
         </div>

@@ -84,7 +84,7 @@
     {
       "id": "food",
       "icon": "ShoppingCart",
-      "title": "Food Shopping",
+      "title": "Shopping",
       "description": "Shop for groceries and find what you need",
       "image": "https://images.unsplash.com/photo-1545186182-9faaf78480b8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxncm9jZXJ5JTIwc3RvcmUlMjBzaG9wcGluZ3xlbnwxfHx8fDE3NzM0ODc5ODB8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
       "situations": [
@@ -276,7 +276,7 @@
     {
       "id": "emergency-help",
       "icon": "AlertTriangle",
-      "title": "Emergency Help",
+      "title": "Emergency",
       "description": "Critical phrases for urgent situations",
       "image": "https://images.unsplash.com/photo-1765752926933-d6a68a4f29e2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxlbWVyZ2VuY3klMjBhbWJ1bGFuY2UlMjB1cmdlbnR8ZW58MXx8fHwxNzczNDk5NzEzfDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
       "situations": [

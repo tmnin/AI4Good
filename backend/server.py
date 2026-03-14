@@ -268,10 +268,15 @@ Do not include quotation marks.
     reply_raw = response.choices[0].message.content.strip()
 
     # extract only the spoken response
+    reply_text = reply_raw
+
     if "Response:" in reply_raw:
-        reply_text = reply_raw.split("Response:")[1].split("Correction:")[0].strip()
-    else:
-        reply_text = reply_raw
+        reply_text = reply_raw.split("Response:")[1]
+
+    if "Correction:" in reply_text:
+        reply_text = reply_text.split("Correction:")[0]
+
+    reply_text = reply_text.strip()
 
     # keep correction internally but don't speak it
     correction = None

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h2>Voice Chat Test</h2>
+
+<button onclick="startRecording()">Start</button>
+<button onclick="stopRecording()">Stop</button>
+
+<script>
+
+let recorder
+let chunks = []
+
+async function startRecording() {
+
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+
+    recorder = new MediaRecorder(stream)
+
+    recorder.ondataavailable = e => chunks.push(e.data)
+
+    recorder.start()
+
+}
+
+async function stopRecording() {
+
+    recorder.stop()
+
+    recorder.onstop = async () => {
+
+        const blob = new Blob(chunks, { type: "audio/webm" })
+        chunks = []
+
+        const form = new FormData()
+        form.append("file", blob, "audio.webm")
+
+        const res = await fetch("http://127.0.0.1:8000/voice-chat?scenario=grocery", {
+            method: "POST",
+            body: form
+        })
+
+        const audioBlob = await res.blob()
+
+        const audioUrl = URL.createObjectURL(audioBlob)
+
+        const audio = new Audio(audioUrl)
+        audio.play()
+    }
+}
+
+</script>
+
+</body>
+</html>

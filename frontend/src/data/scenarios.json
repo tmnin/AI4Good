@@ -73,7 +73,7 @@
   ],
   "emergency": [
     {
-      "id": "call-911",
+      "id": "emergency",
       "icon": "AlertTriangle",
       "title": "911 Call",
       "description": "Report an emergency and share your location",
@@ -87,7 +87,7 @@
       "image": "https://cdnuploads.aa.com.tr/uploads/Contents/2019/10/02/thumbs_b_c_b04684d24875c757263c267ee4b21589.jpg?v=160030"
     },
     {
-      "id": "hospital-emergency",
+      "id": "hospital",
       "icon": "Hospital",
       "title": "Hospital",
       "description": "Get urgent medical care",

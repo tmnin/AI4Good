@@ -1,63 +1,4 @@
-let recorder: MediaRecorder | null = null
-let chunks: Blob[] = []
-
-async function startRecording() {
-  chunks = []
-
-  const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
-
-  recorder = new MediaRecorder(stream)
-
-  recorder.ondataavailable = (e) => {
-    chunks.push(e.data)
-  }
-
-  recorder.start()
-}
-
-async function stopRecording(scenario: string) {
-  if (!recorder) return
-
-  recorder.stop()
-
-  recorder.onstop = async () => {
-    const blob = new Blob(chunks, { type: "audio/webm" })
-    chunks = []
-
-    const form = new FormData()
-    form.append("file", blob, "audio.webm")
-
-    const res = await fetch(`http://127.0.0.1:8000/voice-chat?scenario=${scenario}`, {
-      method: "POST",
-      body: form
-    })
-
-    const data = await res.json()
-
-    const reply = data.reply
-    const correction = data.correction
-    const audioHex = data.audio
-
-    const audioBytes = new Uint8Array(
-      audioHex.match(/.{1,2}/g).map((byte: string) => parseInt(byte, 16))
-    )
-
-    const audioBlob = new Blob([audioBytes], { type: "audio/mpeg" })
-    const audioUrl = URL.createObjectURL(audioBlob)
-
-    const audio = new Audio(audioUrl)
-
-    audio.onended = () => URL.revokeObjectURL(audioUrl)
-
-    await audio.play()
-
-    if (correction && correction !== "null") {
-      alert("Try saying: " + correction)
-    }
-
-  }
-}
-
+// Removed global recording functions so they can be defined inside the component to use state
 import { useState, useEffect } from "react";
 import { motion } from "motion/react";
 import type { LucideIcon } from "lucide-react";
@@ -92,6 +33,9 @@ export function ScenarioScreen({ type }: ScenarioScreenProps) {
   const [selectedScenario, setSelectedScenario] = useState<any>(null);
   const [isListening, setIsListening] = useState(false);
   const [isReady, setIsReady] = useState(false);
+  const [suggestedPhrase, setSuggestedPhrase] = useState<string | null>(null);
+  const [recorder, setRecorder] = useState<MediaRecorder | null>(null);
+  const [audioChunks, setAudioChunks] = useState<Blob[]>([]);
 
   const scenarios = scenariosData[type];
   const scenarioIcons: Record<string, LucideIcon> = {
@@ -143,6 +87,69 @@ export function ScenarioScreen({ type }: ScenarioScreenProps) {
     audio.play();
   };
 
+  const startRecording = async () => {
+    setAudioChunks([]);
+    setSuggestedPhrase(null); // Clear previous phrase
+
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const newRecorder = new MediaRecorder(stream);
+    const chunks: Blob[] = [];
+
+    newRecorder.ondataavailable = (e) => {
+      chunks.push(e.data);
+    };
+
+    newRecorder.onstop = async () => {
+      const blob = new Blob(chunks, { type: "audio/webm" });
+      const form = new FormData();
+      form.append("file", blob, "audio.webm");
+
+      const endpoint = type === "speak" 
+        ? "http://127.0.0.1:8000/phrase-assist" 
+        : `http://127.0.0.1:8000/voice-chat?scenario=${selectedScenario?.id}`;
+
+      try {
+        const res = await fetch(endpoint, {
+          method: "POST",
+          body: form,
+        });
+
+        const data = await res.json();
+        
+        if (type === "speak" && data.phrase) {
+           setSuggestedPhrase(data.phrase);
+        } else if (data.correction && data.correction !== "null") {
+           // Original behavior for voice-chat
+           alert("Try saying: " + data.correction);
+        }
+
+        if (data.audio) {
+          const audioHex = data.audio;
+          const audioBytes = new Uint8Array(
+            audioHex.match(/.{1,2}/g).map((byte: string) => parseInt(byte, 16))
+          );
+          const audioBlob = new Blob([audioBytes], { type: "audio/mpeg" });
+          const audioUrl = URL.createObjectURL(audioBlob);
+          const audio = new Audio(audioUrl);
+          audio.onended = () => URL.revokeObjectURL(audioUrl);
+          await audio.play();
+        }
+
+      } catch (err) {
+        console.error("Audio processing failed", err);
+      }
+    };
+
+    newRecorder.start();
+    setRecorder(newRecorder);
+  };
+
+  const stopRecording = () => {
+    if (recorder && recorder.state !== "inactive") {
+      recorder.stop();
+    }
+  };
+
   const handleMicClick = async () => {
     if (!isReady) return;
 
@@ -153,10 +160,7 @@ export function ScenarioScreen({ type }: ScenarioScreenProps) {
     } else {
       setIsListening(false);
       playBeepSound();
-
-      if (selectedScenario) {
-        await stopRecording(selectedScenario.id);
-      }
+      stopRecording();
     }
   };
 
@@ -260,13 +264,28 @@ export function ScenarioScreen({ type }: ScenarioScreenProps) {
           </button>
         )}
 
-        {/* <h1 className="text-5xl font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-3">
-          <SelectedScenarioIcon className="w-10 h-10" />
-          <span>{selectedScenario.title}</span>
-        </h1> */}
-        {/* <p className="text-xl text-gray-600 dark:text-gray-400 mb-8">
-          {selectedScenario.description}
-        </p> */}
+        {/* Content specific to speak mode vs scenario mode */}
+        {type === "speak" ? (
+          <div>
+            <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-3">
+              <Mic className="w-8 h-8 text-yellow-500" />
+              <span>Live Phrase Assistant</span>
+            </h1>
+            <p className="text-lg text-gray-600 dark:text-gray-400 mb-8">
+              Speak Rohingya or broken English, and I will give you the exact English phrase you need right now.
+            </p>
+          </div>
+        ) : (
+          <div>
+             <h1 className="text-5xl font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-3">
+               <SelectedScenarioIcon className="w-10 h-10" />
+               <span>{selectedScenario.title}</span>
+             </h1>
+             <p className="text-xl text-gray-600 dark:text-gray-400 mb-8">
+               {selectedScenario.description}
+             </p>
+          </div>
+        )}
         {type === "practice" && (
           <div className="flex items-center justify-between mb-6">
             <div className="text-sm text-gray-500 dark:text-gray-400">
@@ -341,26 +360,40 @@ export function ScenarioScreen({ type }: ScenarioScreenProps) {
             </div>
           </div>
 
-          {/* Waveform Visualization */}
-          {isListening && (
-            <div className="flex items-center justify-center gap-1 py-6 px-8 bg-gray-50 dark:bg-gray-900">
-              {[...Array(60)].map((_, i) => (
-                <motion.div
-                  key={i}
-                  className="w-1 bg-yellow-500 dark:bg-yellow-400 rounded-full"
-                  animate={{
-                    height: ["8px", "48px", "8px"],
-                  }}
-                  transition={{
-                    duration: 0.8,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                    delay: i * 0.03,
-                  }}
-                />
-              ))}
-            </div>
-          )}
+          {/* Waveform Visualization & Real-time Info */}
+          <div className="flex flex-col items-center justify-center gap-4 py-8 px-8 bg-gray-50 dark:bg-gray-900 min-h-[160px]">
+            {isListening && (
+              <div className="flex items-center justify-center gap-1 w-full">
+                {[...Array(60)].map((_, i) => (
+                  <motion.div
+                    key={i}
+                    className="w-1 bg-yellow-500 dark:bg-yellow-400 rounded-full"
+                    animate={{
+                      height: ["8px", "48px", "8px"],
+                    }}
+                    transition={{
+                      duration: 0.8,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                      delay: i * 0.03,
+                    }}
+                  />
+                ))}
+              </div>
+            )}
+            
+            {/* Suggested Phrase Area */}
+            {type === "speak" && suggestedPhrase && !isListening && (
+              <motion.div 
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="w-full text-center p-6 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-yellow-100 dark:border-gray-700"
+              >
+                <p className="text-sm font-semibold tracking-wide text-yellow-600 dark:text-yellow-400 uppercase mb-2">You should say:</p>
+                <p className="text-3xl font-bold text-gray-900 dark:text-white">&ldquo;{suggestedPhrase}&rdquo;</p>
+              </motion.div>
+            )}
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

@@ -12,45 +12,49 @@ The conversation loop is the core of Kotha. A user selects a scenario, the AI pl
 
 ---
 
+## Feature: Live Phrase Assistant
+
+**Goal:** A "real-time listening" mode that a user can keep active during a real-world conversation. If the user forgets an English word or gets stuck, they can speak in Rohingya or broken English, and the AI immediately provides the natural English sentence they need to say.
+
+**Endpoint:** `POST /phrase-assist`
+- **Input:** Audio file (speech in Rohingya or broken English)
+- **Output:** `audio/mpeg` stream (The natural English phrase spoken clearly)
+- **Prompt Logic:** Precise, natural, and situational English phrases ready for immediate repetition.
+
+---
+
 ## What's Built (Backend)
 
 **File:** `server.py` — FastAPI server using Groq (`llama-3.3-70b-versatile`) via the OpenAI-compatible client.
 
 ### Active Endpoint: `POST /voice-chat`
 
-The primary conversation endpoint. Handles the full pipeline in one call:
+The primary conversation endpoint. Handles the full pipeline:
 
 ```
-Audio file → Whisper STT → LLM → gTTS → MP3 audio response
+Audio file → Whisper STT → LLM → gTTS → JSON {reply, correction, audio (hex)}
 ```
 
-**Query param:** `?scenario=grocery` (default)
+**Query param:** `?scenario=food` (default)
+**Returns:** JSON object containing:
+- `reply`: The AI's in-character response.
+- `correction`: A suggested clearer phrase (or null).
+- `audio`: Hex-encoded MP3 audio of the reply + educational advice + correction.
 
-**Returns:** `audio/mpeg` stream (AI spoken response)
-
-**What it does:**
-- Saves uploaded audio to `input.wav`, transcribes via Whisper (`whisper-large-v3`)
-- Looks up the scenario from `scenarios.json`
-- Locks the situation for a session via `active_sessions[scenario]` so the same situation is used across turns
-- Tracks turn count per scenario (`active_sessions[scenario]["turns"]`)
-- Flags `is_final_turn` when turns ≥ 3
-- Sends system prompt + `conversation_memory` (last 10 messages) + user text to Groq
-- Converts LLM reply to speech via gTTS, returns as MP3
-- Clears session after 4 turns (`del active_sessions[scenario]`)
-- Logs transcript to server console for debugging only (`print("USER:", ...)`)
+**Key Features:**
+- **Educational Advice**: AI now provides "learning tips" (e.g., explaining why a correction was made) as part of the audio response.
+- **Text Cleaning**: Automatic removal of quotation marks and headers ("Response:", "Advice:") before speech synthesis to ensure natural audio.
+- **Session Persistence**: Locks situations and tracks turn counts (3-4 turns per session).
 
 ### Other Endpoints
 
 | Endpoint | Purpose |
 |---|---|
-| `GET /` | Serves `mic.html` over HTTP |
-| `GET /health` | Health check — returns `{"status": "ok"}` |
-| `POST /conversation` | Text-only conversation (JSON in/out, no audio) |
-| `POST /transcribe` | STT only — returns `{"text": "..."}` |
-| `POST /voice-conversation` | Audio in, returns `{"user_text": ..., "response": ...}` |
-| `POST /speak` | TTS only — takes `{"text": "..."}`, returns audio stream |
-
-> **Note:** `/voice-chat` is the active endpoint. `/transcribe`, `/voice-conversation`, and `/conversation` are legacy/unused in the current frontend.
+| `GET /` | Serves `mic.html` |
+| `GET /phrase` | Serves `phrase.html` (Live Phrase Assistant UI) |
+| `POST /phrase-assist` | Instant English help from Rohingya/English audio |
+| `POST /conversation` | Text-only JSON interaction (returns `advice` field) |
+| `POST /speak` | TTS only — takes text, returns audio stream |
 
 ---
 
@@ -81,32 +85,33 @@ The system prompt sent to Groq instructs the model to respond in **plain text** 
 ```
 Response: <reply + optional follow-up question>
 
-Correction: "<grammar correction>" OR null
+Advice: <educational tip> OR null
+
+Correction: <grammar correction> OR null
 ```
 
 Rules encoded in the prompt:
 - Respond naturally in character (1 short sentence)
 - Ask a simple follow-up question to continue the conversation
-- Only give a correction if the learner's sentence has a grammar mistake
+- If a grammar mistake exists, provide a simple piece of advice and then the correction
 - If already correct, do NOT repeat it
 - Keep responses very short and simple
-- If input is Rohingya or broken English, infer English intent and respond to that
+- Do NOT use quotation marks in the output (to prevent gTTS "quote" issue)
 - `Final turn: True/False` is passed in the prompt to signal wrap-up
-
-**Note:** `response_format={"type": "json_object"}` is **not** used — the prompt targets plain text output.
 
 ---
 
 ## Scenarios (`scenarios.json`)
 
-Four scenarios, each with a role and 3 situation strings:
+The system supports 15 specialized scenarios with custom AI roles and starter lines:
 
-| Scenario | Role | Situations |
-|---|---|---|
-| `grocery` | grocery store worker | Finding items, halal meat/fish, ingredients |
-| `doctor` | clinic receptionist | Sick child, seeing a doctor, pharmacy location |
-| `bus` | bus driver | Which bus, fare cost, where to get off |
-| `school` | school office staff | Child registration, classroom location, school hours |
+| Category | Scenarios |
+|---|---|
+| **Everyday** | Food, Bus, Doctor, School, Medicine, Work, House, Bank, Community, Restaurant |
+| **Emergency** | 911 Call, Police, Hospital, Shelter |
+| **Learning** | Free Conversation |
+
+---
 
 ---
 

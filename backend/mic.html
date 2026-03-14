@@ -70,8 +70,15 @@ async function stopRecording() {
             return
         }
 
-        const audioBlob = await res.blob()
+        const data = await res.json()
 
+        if (data.correction && data.correction !== "null") {
+            console.log("Correction:", data.correction);
+        }
+
+        const audioHex = data.audio
+        const audioBytes = new Uint8Array(audioHex.match(/.{1,2}/g).map(byte => parseInt(byte, 16)))
+        const audioBlob = new Blob([audioBytes], { type: "audio/mpeg" })
         const audioUrl = URL.createObjectURL(audioBlob)
 
         const audio = new Audio(audioUrl)

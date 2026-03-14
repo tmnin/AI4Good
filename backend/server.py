@@ -218,6 +218,8 @@ async def voice_chat(file: UploadFile = File(...), scenario: str = "food"):
         "free-conversation": "Hi there! I'm happy to practice English with you. What do you want to talk about?"
     }.get(scenario, "Hello! How can I help you?")
 
+    situations_text = "\n".join(f"- {s}" for s in example_situations)
+
     messages = [
         {
             "role": "system",
@@ -227,9 +229,7 @@ You are helping a beginner practice spoken English through conversation.
 Scenario type: {scenario}
 
 Possible examples in this scenario:
-- {example_situations[0]}
-- {example_situations[1]}
-- {example_situations[2]}
+{situations_text}
 
 The conversation begins with you saying:
 "{starter}"
@@ -293,5 +293,48 @@ Correction: "<grammar correction>" OR null
     return {
         "reply": reply_text,
         "correction": correction,
+        "audio": audio_buffer.getvalue().hex()
+    }
+
+
+# -----------------------------
+# Phrase Assist
+# -----------------------------
+
+@app.post("/phrase-assist")
+async def phrase_assist(file: UploadFile = File(...)):
+    audio_bytes = await file.read()
+
+    transcription = get_client().audio.transcriptions.create(
+        file=("speech.webm", audio_bytes),
+        model="whisper-large-v3"
+    )
+
+    user_text = transcription.text
+
+    system_prompt = """
+You are a live phrase assistant helping a Rohingya speaker learn English. 
+They will speak in Rohingya or broken English. Output ONLY the exact natural English phrase they are trying to say or should say next. 
+Do not include any pleasantries or quotes in the output. Keep it to a single idiomatic sentence.
+"""
+
+    response = get_client().chat.completions.create(
+        model=MODEL,
+        temperature=0.3,
+        messages=[
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_text}
+        ]
+    )
+
+    phrase = response.choices[0].message.content.strip().strip('"')
+
+    audio_buffer = io.BytesIO()
+    tts = gTTS(text=phrase, lang="en", slow=False)
+    tts.write_to_fp(audio_buffer)
+    audio_buffer.seek(0)
+
+    return {
+        "phrase": phrase,
         "audio": audio_buffer.getvalue().hex()
     }

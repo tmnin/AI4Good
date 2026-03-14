@@ -8,40 +8,123 @@
 
 ## Overview
 
-The conversation loop is the core of Kotha. A user selects a scenario, the AI plays a character (e.g. bus driver, doctor), and they exchange spoken turns. The AI responds naturally, gently corrects unclear English, and guides the user to repeat better phrasing before continuing. Each session is 3–5 turns long.
+The conversation loop is the core of Kotha. A user selects a scenario, the AI plays a character (e.g. bus driver, doctor), and they exchange spoken turns. The AI responds naturally, gently corrects unclear English, and guides the user to repeat better phrasing before continuing. Each session is 3–4 turns long. The experience is **audio-only** — no transcript is shown to the user.
 
 ---
 
-## What's Already Built (Backend)
+## What's Built (Backend)
 
 **File:** `server.py` — FastAPI server using Groq (`llama-3.3-70b-versatile`) via the OpenAI-compatible client.
 
-**Endpoint:** `POST /conversation`
-```json
-Request:  { "scenario": "bus", "user_text": "i want hospital" }
-Response: { "response": "AI_REPLY: ...\nSUGGESTED_PHRASE: ..." }
+### Active Endpoint: `POST /voice-chat`
+
+The primary conversation endpoint. Handles the full pipeline in one call:
+
+```
+Audio file → Whisper STT → LLM → gTTS → MP3 audio response
 ```
 
-**Endpoint:** `GET /health`
+**Query param:** `?scenario=grocery` (default)
+
+**Returns:** `audio/mpeg` stream (AI spoken response)
 
 **What it does:**
-- Loads `scenarios.json` at startup
-- Picks a random situation string for the given scenario
-- Sends a system prompt + user text to Groq
-- Returns raw text with two fields: `AI_REPLY` and `SUGGESTED_PHRASE` (or `NONE`)
+- Saves uploaded audio to `input.wav`, transcribes via Whisper (`whisper-large-v3`)
+- Looks up the scenario from `scenarios.json`
+- Locks the situation for a session via `active_sessions[scenario]` so the same situation is used across turns
+- Tracks turn count per scenario (`active_sessions[scenario]["turns"]`)
+- Flags `is_final_turn` when turns ≥ 3
+- Sends system prompt + `conversation_memory` (last 10 messages) + user text to Groq
+- Converts LLM reply to speech via gTTS, returns as MP3
+- Clears session after 4 turns (`del active_sessions[scenario]`)
+- Logs transcript to server console for debugging only (`print("USER:", ...)`)
 
-**Current gaps to address:**
-- Response is a raw string, not structured JSON — frontend needs to parse `AI_REPLY:` and `SUGGESTED_PHRASE:` out of text. Should be migrated to JSON output (see LLM Prompt Contract below)
-- No conversation history is passed — each turn is stateless. Multi-turn context needs to be added
-- No TTS endpoint yet — audio generation (gTTS) exists but isn't wired up
-- `scenarios.json` only has 3 scenarios (grocery, doctor, bus) — needs expanding
-- `session_end` signal not yet implemented
+### Other Endpoints
+
+| Endpoint | Purpose |
+|---|---|
+| `GET /` | Serves `mic.html` over HTTP |
+| `GET /health` | Health check — returns `{"status": "ok"}` |
+| `POST /conversation` | Text-only conversation (JSON in/out, no audio) |
+| `POST /transcribe` | STT only — returns `{"text": "..."}` |
+| `POST /voice-conversation` | Audio in, returns `{"user_text": ..., "response": ...}` |
+| `POST /speak` | TTS only — takes `{"text": "..."}`, returns audio stream |
+
+> **Note:** `/voice-chat` is the active endpoint. `/transcribe`, `/voice-conversation`, and `/conversation` are legacy/unused in the current frontend.
+
+---
+
+## Session Management
+
+**`active_sessions`** (in-memory dict, keyed by scenario name):
+```python
+active_sessions[scenario] = {
+    "situation": "...",  # locked at start of session
+    "turns": 0           # incremented each call
+}
+```
+- Session is created on first call for a scenario
+- Situation is fixed for the duration of the session (consistent context)
+- `is_final_turn = turns >= 3` is passed to the LLM prompt
+- Session is deleted when `turns >= 4`
+
+**`conversation_memory`** (global list, last 10 messages):
+- Appended each turn: user message + AI reply (raw text)
+- Trimmed to 10 entries: `conversation_memory[:] = conversation_memory[-10:]`
+
+---
+
+## LLM Prompt (Current)
+
+The system prompt sent to Groq instructs the model to respond in **plain text** with this format:
+
+```
+Response: <reply + optional follow-up question>
+
+Correction: "<grammar correction>" OR null
+```
+
+Rules encoded in the prompt:
+- Respond naturally in character (1 short sentence)
+- Ask a simple follow-up question to continue the conversation
+- Only give a correction if the learner's sentence has a grammar mistake
+- If already correct, do NOT repeat it
+- Keep responses very short and simple
+- If input is Rohingya or broken English, infer English intent and respond to that
+- `Final turn: True/False` is passed in the prompt to signal wrap-up
+
+**Note:** `response_format={"type": "json_object"}` is **not** used — the prompt targets plain text output.
+
+---
+
+## Scenarios (`scenarios.json`)
+
+Four scenarios, each with a role and 3 situation strings:
+
+| Scenario | Role | Situations |
+|---|---|---|
+| `grocery` | grocery store worker | Finding items, halal meat/fish, ingredients |
+| `doctor` | clinic receptionist | Sick child, seeing a doctor, pharmacy location |
+| `bus` | bus driver | Which bus, fare cost, where to get off |
+| `school` | school office staff | Child registration, classroom location, school hours |
+
+---
+
+## Frontend (`mic.html`)
+
+Served at `http://127.0.0.1:8000/` — must be opened via HTTP, not `file://` (browser blocks mic on `file://`).
+
+**Audio-only experience** — no text shown to the user.
+
+Flow:
+1. User picks a scenario
+2. Clicks **Start** → mic records via `MediaRecorder`
+3. Clicks **Stop** → audio blob sent to `POST /voice-chat?scenario=...`
+4. Response MP3 played back immediately via `Audio` API
 
 ---
 
 ## Conversation States
-
-The loop moves through these states in order:
 
 ```
 SCENARIO_INTRO → AI_TURN → USER_TURN → PROCESSING → [CORRECTION_LOOP] → AI_TURN → ... → SESSION_END
@@ -49,124 +132,28 @@ SCENARIO_INTRO → AI_TURN → USER_TURN → PROCESSING → [CORRECTION_LOOP] �
 
 ### 1. `SCENARIO_INTRO`
 - AI speaks an opening line that sets the scene in character.
-- This is dynamically generated — same scenario should feel different each time.
-- Example: *"Hello! I'm the bus driver. Where are you going today?"*
-- UI shows the scenario image + pulsing mic. A soft beep plays when it's the user's turn.
+- Hardcoded starter lines per scenario:
+  - grocery: *"Hello! How can I help you today?"*
+  - doctor: *"Hello, what seems to be the problem?"*
+  - bus: *"Where are you going today?"*
+  - school: *"Hello! How can I help you with school registration?"*
 
 ### 2. `USER_TURN`
-- Mic activates. Pulses to indicate readiness.
-- User speaks in English or Rohingya.
+- Mic activates. User speaks in English or Rohingya.
 - STT (Whisper) transcribes speech.
-- If **nothing intelligible** is captured after ~4 seconds: go to `UNCLEAR_SPEECH`.
 
-### 3. `UNCLEAR_SPEECH` (sub-state)
-- AI says something encouraging: *"I didn't catch that — could you try again?"*
-- Mic re-activates. Max **2 retries**.
-- After 2 failed retries: AI gently moves on — *"That's okay, let's keep going."* — and advances the turn counter.
+### 3. `PROCESSING`
+- Audio sent to `/voice-chat`. LLM processes.
+- If input was Rohingya: prompt instructs LLM to infer English intent first.
 
-### 4. `PROCESSING`
-- Show bouncing dots while the LLM processes.
-- If input was Rohingya: the LLM prompt instructs it to infer English intent first, then respond.
-- LLM evaluates: did the user communicate their intent clearly enough?
+### 4. `AI_RESPONSE`
+- AI responds in character (plain text → gTTS → MP3 played back).
+- If English was unclear: response includes a correction phrase.
+- Correction is spoken as part of the audio reply (not displayed as text).
 
-### 5. `AI_RESPONSE` — two paths:
-
-#### Path A — Input was clear enough:
-- AI stays in character and responds naturally.
-- Show thumbs up emoji briefly before AI speaks.
-- Advance turn counter.
-
-#### Path B — Input was unclear but understandable:
-- AI **breaks character gently**, gives a correction:
-  - *"I understand you! Try saying: 'Can you tell me if this bus goes to the hospital?'"*
-- The suggested phrase is displayed as text on screen + spoken aloud by TTS.
-- Enter `CORRECTION_LOOP`.
-
-### 6. `CORRECTION_LOOP`
-- Mic re-activates. User attempts the suggested phrase.
-- LLM evaluates attempt **leniently** — any reasonable attempt passes.
-- **Pass:** Thumbs up + AI resumes in character, responding to the corrected phrase. Advance turn counter.
-- **Fail:** One more attempt offered — *"Good try! One more time."*
-- After second failed attempt: pass automatically, advance turn counter. Never punish.
-
-### 7. `SESSION_END`
-- Triggers after **4 completed exchanges**.
-- AI wraps up in character: *"Great talking with you! You did really well."*
-- UI shows a simple end screen — scenario complete.
-
----
-
-## LLM Prompt Contract
-
-The current backend returns a raw string. This should be migrated to structured JSON. Update the system prompt to output:
-
-```json
-{
-  "understood": true,
-  "was_clear": false,
-  "character_response": "Of course! The next stop is Main Street.",
-  "correction": "Can you tell me what the next stop is?",
-  "session_end": false
-}
-```
-
-Rules encoded in the prompt:
-- Never say the user is wrong
-- If input appears to be Rohingya, infer English intent and respond to that
-- Keep all responses to 1–2 sentences
-- `correction` is `null` if `was_clear` is `true`
-- `session_end` is `true` on the final turn wrap-up
-
-To migrate, replace the current `AI_REPLY` / `SUGGESTED_PHRASE` text format in `server.py` with an explicit JSON-only instruction, and parse `response.choices[0].message.content` as JSON on the backend before returning it to the frontend.
-
----
-
-## Multi-turn History
-
-The current `/conversation` endpoint is stateless. To support context across turns, the frontend should maintain a `messages` array and send it with each request:
-
-```json
-{
-  "scenario": "bus",
-  "history": [
-    { "role": "assistant", "content": "Hello! Where are you going today?" },
-    { "role": "user", "content": "hospital" }
-  ],
-  "user_text": "which bus go there"
-}
-```
-
-The backend should prepend the system prompt and append `user_text` as the latest user message before sending to Groq.
-
----
-
-## TTS Wiring
-
-gTTS is available but not yet exposed as an endpoint. A minimal endpoint to add:
-
-```
-POST /speak
-Body: { "text": "Try saying: Can I have some rice please?" }
-Returns: audio/mpeg stream
-```
-
-The frontend calls this after every `character_response` and every `correction` to play audio back to the user.
-
----
-
-## Turn & State Logic (Frontend)
-
-```
-turnCount = 0
-MAX_TURNS = 4
-
-on user input received:
-  → send to /conversation with history + user_text
-  → if understood = false AND retries < 2: re-prompt user
-  → if was_clear = false: enter CORRECTION_LOOP, call /speak with correction text
-  → if was_clear = true OR correction loop passed: call /speak with character_response, turnCount++
-  → if turnCount >= MAX_TURNS OR session_end = true: go to SESSION_END
-```
+### 5. `SESSION_END`
+- Triggers after 4 turns (`active_sessions` deleted).
+- LLM is flagged with `Final turn: True` at turn 3 to prompt a wrap-up.
 
 ---
 
@@ -174,11 +161,10 @@ on user input received:
 
 | Situation | Behaviour |
 |---|---|
-| Total STT failure (2x) | Skip turn, advance counter, AI says "let's keep going" |
-| Correction loop failed (2x) | Auto-pass, advance turn, never penalise |
-| LLM returns malformed JSON | Fallback: treat as `was_clear: true`, play a generic in-character filler line |
-| `/speak` TTS call fails | Skip audio, show text only |
-| User taps back mid-session | Return to home, session discarded, no penalty |
+| Unknown scenario | Returns `{"error": "unknown scenario"}` |
+| LLM returns garbled output | Raw text still sent to gTTS — no crash |
+| `active_sessions` key missing on turn 4 check | `del active_sessions[scenario]` — safe if session exists |
+| Browser opens `mic.html` via `file://` | Mic blocked by browser — must use `http://127.0.0.1:8000/` |
 
 ---
 
@@ -189,6 +175,8 @@ on user input received:
 - Rohingya TTS (AI speaks English only)
 - Emergency phrases mode
 - "Speak in Rohingya" translation mode
+- Transcript display (audio-only by design)
+- Multi-user sessions (single global `conversation_memory`)
 
 ---
 
@@ -197,7 +185,7 @@ on user input received:
 | Layer | Tool |
 |---|---|
 | LLM | Groq `llama-3.3-70b-versatile` |
-| STT | Whisper (or Groq Whisper) |
-| TTS | gTTS (already in repo) |
+| STT | Groq Whisper (`whisper-large-v3`) |
+| TTS | gTTS |
 | Backend | FastAPI (`server.py`) |
-| Frontend | TBD (teammate) |
+| Frontend | `mic.html` (plain HTML/JS, served by FastAPI) |

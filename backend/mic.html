@@ -4,12 +4,19 @@
 
 <h2>Voice Practice</h2>
 
-<h3>Choose scenario</h3>
+<h3>Everyday Scenarios</h3>
 
 <button onclick="setScenario('grocery')">🛒 Grocery</button>
 <button onclick="setScenario('doctor')">🩺 Doctor</button>
 <button onclick="setScenario('bus')">🚌 Bus</button>
 <button onclick="setScenario('school')">🏫 School</button>
+
+<h3>Emergency Scenarios</h3>
+
+<button onclick="setScenario('emergency')">🚨 911 Call</button>
+<button onclick="setScenario('police')">👮 Police</button>
+<button onclick="setScenario('hospital')">🏥 Hospital</button>
+<button onclick="setScenario('shelter')">🏠 Shelter</button>
 
 <br><br>
 
@@ -28,15 +35,11 @@ function setScenario(s) {
 }
 
 async function startRecording() {
-
+    chunks = []
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
-
     recorder = new MediaRecorder(stream)
-
     recorder.ondataavailable = e => chunks.push(e.data)
-
     recorder.start()
-
 }
 
 async function stopRecording() {
@@ -57,9 +60,7 @@ async function stopRecording() {
         })
 
         const audioBlob = await res.blob()
-
         const audioUrl = URL.createObjectURL(audioBlob)
-
         const audio = new Audio(audioUrl)
         audio.play()
     }

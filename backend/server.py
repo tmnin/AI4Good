@@ -1,3 +1,14 @@
+import json
+import random
+import os
+
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+from dotenv import load_dotenv
+from openai import OpenAI
+from fastapi import UploadFile, File
+from fastapi.responses import StreamingResponse
 import io
 import json
 import os
@@ -20,11 +31,18 @@ conversation_memory = []
 load_dotenv()
 
 api_key = os.getenv("GROQ_API_KEY")
+client = None
 
-client = OpenAI(
-    api_key=api_key,
-    base_url="https://api.groq.com/openai/v1"
-)
+def get_client():
+    if not api_key:
+        raise RuntimeError("GROQ_API_KEY is not set in environment")
+    global client
+    if not client:
+        client = OpenAI(
+            api_key=api_key,
+            base_url="https://api.groq.com/openai/v1"
+        )
+    return client
 
 MODEL = "llama-3.3-70b-versatile"
 
@@ -42,6 +60,13 @@ with open("scenarios.json") as f:
 # -----------------------------
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 # -----------------------------
@@ -109,12 +134,11 @@ You must output in valid JSON format matching this schema:
   "session_end": boolean // true if this is the final wrap-up after about 4 exchanges
 }}
 """
-
     messages = [{"role": "system", "content": system_prompt}]
     messages.extend(req.history)
     messages.append({"role": "user", "content": req.user_text})
 
-    response = client.chat.completions.create(
+    response = get_client().chat.completions.create(
         model=MODEL,
         messages=messages,
         response_format={"type": "json_object"}
@@ -139,7 +163,7 @@ async def transcribe(file: UploadFile = File(...)):
 
     audio_bytes = await file.read()
 
-    response = client.audio.transcriptions.create(
+    response = get_client().audio.transcriptions.create(
         file=("speech.wav", audio_bytes),
         model="whisper-large-v3"
     )
@@ -152,7 +176,7 @@ async def voice_conversation(file: UploadFile = File(...), scenario: str = "groc
     audio_bytes = await file.read()
 
     # speech → text
-    stt = client.audio.transcriptions.create(
+    stt = get_client().audio.transcriptions.create(
         file=("speech.wav", audio_bytes),
         model="whisper-large-v3"
     )
@@ -181,7 +205,7 @@ AI_REPLY: ...
 SUGGESTED_PHRASE: ...
 """
 
-    response = client.chat.completions.create(
+    response = get_client().chat.completions.create(
         model=MODEL,
         messages=[
             {"role": "system", "content": system_prompt},
@@ -217,7 +241,7 @@ async def voice_chat(file: UploadFile = File(...), scenario: str = "grocery"):
 
     # 2. speech → text
     with open(input_path, "rb") as audio:
-        transcription = client.audio.transcriptions.create(
+        transcription = get_client().audio.transcriptions.create(
             model="whisper-large-v3",
             file=audio
         )
@@ -276,7 +300,7 @@ async def voice_chat(file: UploadFile = File(...), scenario: str = "grocery"):
 
     messages.append({"role": "user", "content": user_text})
 
-    response = client.chat.completions.create(
+    response = get_client().chat.completions.create(
         model=MODEL,
         max_tokens=40,
         temperature=0.7,

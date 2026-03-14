@@ -3,6 +3,7 @@ import random
 import os
 
 from fastapi import FastAPI
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from dotenv import load_dotenv
 from openai import OpenAI
@@ -51,6 +52,10 @@ app = FastAPI()
 class ConversationRequest(BaseModel):
     scenario: str
     user_text: str
+    history: list[dict] = []
+
+class SpeakRequest(BaseModel):
+    text: str
 
 
 # -----------------------------
@@ -88,30 +93,47 @@ Your rules:
 - respond naturally to what they mean
 - never say they are wrong
 - if needed, suggest a clearer sentence they could say
-- keep sentences short and simple
+- keep sentences short and simple (1-2 sentences max)
+- if the input appears to be Rohingya or completely broken, infer their English intent first and respond to that intent in English.
 
 Scenario:
 {situation}
 
 You are playing the role of: {scenario["role"]}
 
-Output exactly like this:
-
-AI_REPLY: <your response>
-SUGGESTED_PHRASE: <clearer sentence or NONE>
+You must output in valid JSON format matching this schema:
+{{
+  "understood": boolean, // false only if the speech is completely unintelligible
+  "was_clear": boolean, // false if they were understood but the English was broken or could be significantly improved
+  "character_response": string, // Your in-character response to the user's intent
+  "correction": string | null, // A suggested clearer phrase for the user to try, or null if was_clear is true
+  "session_end": boolean // true if this is the final wrap-up after about 4 exchanges
+}}
 """
+
+    messages = [{"role": "system", "content": system_prompt}]
+    messages.extend(req.history)
+    messages.append({"role": "user", "content": req.user_text})
 
     response = client.chat.completions.create(
         model=MODEL,
-        messages=[
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": req.user_text}
-        ]
+        messages=messages,
+        response_format={"type": "json_object"}
     )
 
     text = response.choices[0].message.content
 
-    return {"response": text}
+    try:
+        parsed = json.loads(text)
+        return parsed
+    except json.JSONDecodeError:
+        return {
+            "understood": True,
+            "was_clear": True,
+            "character_response": "I see. Let's keep going.",
+            "correction": None,
+            "session_end": False
+        }
 
 @app.post("/transcribe")
 async def transcribe(file: UploadFile = File(...)):
@@ -173,15 +195,18 @@ SUGGESTED_PHRASE: ...
         "response": response.choices[0].message.content
     }
 
-@app.get("/speak")
-def speak(text: str):
+# -----------------------------
+# Speak route
+# -----------------------------
 
-    output_file = "speech.mp3"
-
-    tts = gTTS(text=text, lang="en")
-    tts.save(output_file)
-
-    return FileResponse(output_file, media_type="audio/mpeg")
+@app.post("/speak")
+def speak(req: SpeakRequest):
+    tts = gTTS(text=req.text, lang='en')
+    mp3_fp = io.BytesIO()
+    tts.write_to_fp(mp3_fp)
+    mp3_fp.seek(0)
+    
+    return StreamingResponse(mp3_fp, media_type="audio/mpeg")
 
 @app.post("/voice-chat")
 async def voice_chat(file: UploadFile = File(...)):

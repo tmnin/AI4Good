@@ -86,6 +86,10 @@ class SpeakRequest(BaseModel):
 # Health route
 # -----------------------------
 
+@app.get("/")
+def serve_mic():
+    return FileResponse("mic.html")
+
 @app.get("/health")
 def health():
     return {"status": "ok"}

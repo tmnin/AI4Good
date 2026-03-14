@@ -16,6 +16,12 @@
 <button onclick="startRecording()">Start</button>
 <button onclick="stopRecording()">Stop</button>
 
+<hr>
+
+<div id="transcript" style="font-family: sans-serif; max-width: 600px;">
+  <em>Transcript will appear here after you speak...</em>
+</div>
+
 <script>
 
 let recorder
@@ -28,15 +34,11 @@ function setScenario(s) {
 }
 
 async function startRecording() {
-
+    chunks = []
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
-
     recorder = new MediaRecorder(stream)
-
     recorder.ondataavailable = e => chunks.push(e.data)
-
     recorder.start()
-
 }
 
 async function stopRecording() {
@@ -56,10 +58,37 @@ async function stopRecording() {
             body: form
         })
 
-        const audioBlob = await res.blob()
+        const data = await res.json()
 
+        // Show transcript
+        const box = document.getElementById("transcript")
+        const userLine = document.createElement("p")
+        userLine.innerHTML = `<strong>You:</strong> ${data.user_text}`
+        box.appendChild(userLine)
+
+        const aiReply = data.response?.character_response || ""
+        const correction = data.response?.correction || null
+
+        const aiLine = document.createElement("p")
+        aiLine.innerHTML = `<strong>AI:</strong> ${aiReply}`
+        box.appendChild(aiLine)
+
+        if (correction) {
+            const corrLine = document.createElement("p")
+            corrLine.innerHTML = `<em>💡 Try saying: "${correction}"</em>`
+            corrLine.style.color = "teal"
+            box.appendChild(corrLine)
+        }
+
+        // Play audio via /speak
+        const speakRes = await fetch("http://127.0.0.1:8000/speak", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ text: aiReply })
+        })
+
+        const audioBlob = await speakRes.blob()
         const audioUrl = URL.createObjectURL(audioBlob)
-
         const audio = new Audio(audioUrl)
         audio.play()
     }

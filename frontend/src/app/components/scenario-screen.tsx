@@ -4,6 +4,7 @@ import type { LucideIcon } from "lucide-react";
 import {
   AlertTriangle,
   ArrowLeft,
+  ArrowRight,
   Banknote,
   Briefcase,
   Bus,
@@ -51,6 +52,9 @@ export function ScenarioScreen({ type }: ScenarioScreenProps) {
     ? scenarioIcons[selectedScenario.icon] ?? MessageCircle
     : MessageCircle;
   const SelectedScenarioIcon = selectedScenarioIcon;
+  const selectedIndex = selectedScenario
+    ? scenarios.findIndex((scenario) => scenario.id === selectedScenario.id)
+    : -1;
 
   // Auto-select first scenario for emergency and speak modes
   useEffect(() => {
@@ -85,6 +89,16 @@ export function ScenarioScreen({ type }: ScenarioScreenProps) {
     playBeepSound();
   };
 
+  const handleScenarioStep = (direction: "prev" | "next") => {
+    if (!selectedScenario || scenarios.length === 0) return;
+    const delta = direction === "next" ? 1 : -1;
+    const nextIndex =
+      (selectedIndex + delta + scenarios.length) % scenarios.length;
+    setSelectedScenario(scenarios[nextIndex]);
+    setIsListening(false);
+    setIsReady(false);
+  };
+
   // If no scenario selected, show grid of scenario options
   if (!selectedScenario) {
     return (
@@ -116,7 +130,8 @@ export function ScenarioScreen({ type }: ScenarioScreenProps) {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {scenarios.map((scenario) => {
-              const ScenarioIcon = scenarioIcons[scenario.icon] ?? MessageCircle;
+              const ScenarioIcon =
+                scenarioIcons[scenario.icon] ?? MessageCircle;
               return (
                 <button
                   key={scenario.id}
@@ -134,12 +149,10 @@ export function ScenarioScreen({ type }: ScenarioScreenProps) {
                       <div className="mb-2">
                         <ScenarioIcon className="w-10 h-10" />
                       </div>
-                      <div className="text-2xl font-bold">
-                        {scenario.title}
-                      </div>
+                      <div className="text-2xl font-bold">{scenario.title}</div>
                     </div>
                   </div>
-                {/* <div className="p-6">
+                  {/* <div className="p-6">
                   <p className="text-gray-600 dark:text-gray-400 mb-4">
                     {scenario.description}
                   </p>
@@ -196,9 +209,30 @@ export function ScenarioScreen({ type }: ScenarioScreenProps) {
           <SelectedScenarioIcon className="w-10 h-10" />
           <span>{selectedScenario.title}</span>
         </h1>
-        <p className="text-xl text-gray-600 dark:text-gray-400 mb-8">
+        {/* <p className="text-xl text-gray-600 dark:text-gray-400 mb-8">
           {selectedScenario.description}
-        </p>
+        </p> */}
+        <div className="flex items-center justify-between mb-6">
+          <div className="text-sm text-gray-500 dark:text-gray-400">
+            Scenario {selectedIndex + 1} of {scenarios.length}
+          </div>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => handleScenarioStep("prev")}
+              className="w-12 h-12 rounded-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex items-center justify-center"
+              title="Previous scenario"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </button>
+            <button
+              onClick={() => handleScenarioStep("next")}
+              className="w-12 h-12 rounded-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex items-center justify-center"
+              title="Next scenario"
+            >
+              <ArrowRight className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
 
         {/* Full Width Image Card */}
         <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl overflow-hidden mb-8">
@@ -274,7 +308,7 @@ export function ScenarioScreen({ type }: ScenarioScreenProps) {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Situations Card */}
-          <div className="lg:col-span-2">
+          {/* <div className="lg:col-span-2">
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8">
               <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
                 <span className="inline-flex items-center gap-2">
@@ -302,7 +336,7 @@ export function ScenarioScreen({ type }: ScenarioScreenProps) {
                 )}
               </div>
             </div>
-          </div>
+          </div> */}
 
           {/* Side Panel */}
           <div className="space-y-6">
@@ -346,40 +380,6 @@ export function ScenarioScreen({ type }: ScenarioScreenProps) {
                 {!isReady && "Preparing your lesson..."}
               </p>
             </div> */}
-
-            {/* More Scenarios */}
-            {scenarios.length > 1 && type === "practice" && (
-              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
-                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
-                  <span className="inline-flex items-center gap-2">
-                    <Layers className="w-5 h-5" />
-                    <span>More Scenarios</span>
-                  </span>
-                </h3>
-                <div className="space-y-2">
-                  {scenarios
-                    .filter((s: any) => s.id !== selectedScenario.id)
-                    .slice(0, 4)
-                    .map((s: any) => {
-                      const ScenarioIcon = scenarioIcons[s.icon] ?? MessageCircle;
-                      return (
-                        <button
-                          key={s.id}
-                          onClick={() => {
-                            setSelectedScenario(s);
-                            setIsReady(false);
-                            setIsListening(false);
-                          }}
-                          className="w-full p-3 rounded-lg text-left text-sm bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 hover:text-indigo-700 dark:hover:text-indigo-400 transition-colors flex items-center gap-2"
-                        >
-                          <ScenarioIcon className="w-5 h-5" />
-                          <span className="font-medium">{s.title}</span>
-                        </button>
-                      );
-                    })}
-                </div>
-              </div>
-            )}
           </div>
         </div>
       </div>

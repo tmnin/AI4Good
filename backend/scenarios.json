@@ -1,28 +1,37 @@
 {
   "grocery": {
-    "role": "store worker",
+    "role": "grocery store worker",
     "situations": [
-      "You are in a grocery store. The learner wants to buy fish.",
-      "The learner is looking for rice.",
-      "The learner wants to ask if food is halal."
+      "You work at a grocery store and a customer asks where things are.",
+      "A customer is looking for halal meat or fish.",
+      "A customer needs help finding ingredients."
     ]
   },
 
   "doctor": {
-    "role": "doctor",
+    "role": "clinic receptionist",
     "situations": [
-      "The learner's child has a fever.",
-      "The learner feels dizzy.",
-      "The learner wants to ask for a female doctor."
+      "A parent brings a sick child to the clinic.",
+      "A patient asks how to see a doctor.",
+      "Someone asks where the pharmacy is."
     ]
   },
 
   "bus": {
     "role": "bus driver",
     "situations": [
-      "The learner wants to go to the hospital.",
-      "The learner asks about the next stop.",
-      "The learner asks the driver to wait because of a stroller."
+      "A passenger asks which bus goes downtown.",
+      "A passenger asks how much the fare is.",
+      "Someone asks where to get off the bus."
+    ]
+  },
+
+  "school": {
+    "role": "school office staff",
+    "situations": [
+      "A parent asks how to register their child for school.",
+      "A parent asks where the classroom is.",
+      "Someone asks about school hours."
     ]
   }
 }

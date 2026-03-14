@@ -62,7 +62,7 @@ export function DashboardScreen({ onNavigate }: DashboardScreenProps) {
       title: "Free Speaking",
       description: "Practice speaking freely in Rohingya",
       image:
-        "https://images.unsplash.com/photo-1773243906496-4a1ff77984b2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtaWNyb3Bob25lJTIwc3BlYWtpbmclMjB2b2ljZXxlbnwxfHx8fDE3NzM0OTgyODd8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
+        "https://img-cdn.inc.com/image/upload/f_webp,q_auto,c_fit/images/panoramic/GettyImages-1369712079_510983_ndekda.jpg",
       icon: Mic,
     },
   ];
@@ -91,9 +91,7 @@ export function DashboardScreen({ onNavigate }: DashboardScreenProps) {
                 className="bg-white/80 dark:bg-gray-800 rounded-2xl shadow-lg p-6 ring-1 ring-yellow-100 dark:ring-gray-700"
               >
                 <div className="flex items-center justify-between mb-4">
-                  <div
-                    className="w-12 h-12 rounded-xl border border-yellow-200 dark:border-yellow-900/40 bg-transparent flex items-center justify-center"
-                  >
+                  <div className="w-12 h-12 rounded-xl border border-yellow-200 dark:border-yellow-900/40 bg-transparent flex items-center justify-center">
                     <Icon className="w-6 h-6 text-yellow-500 dark:text-yellow-300" />
                   </div>
                 </div>
@@ -139,11 +137,11 @@ export function DashboardScreen({ onNavigate }: DashboardScreenProps) {
                       <div className="text-xl font-bold">{action.title}</div>
                     </div>
                   </div>
-                  <div className="p-6">
+                  {/* <div className="p-6">
                     <p className="text-gray-600 dark:text-gray-400 text-left">
                       {action.description}
                     </p>
-                  </div>
+                  </div> */}
                 </button>
               );
             })}

@@ -282,16 +282,19 @@ async def voice_chat(file: UploadFile = File(...), scenario: str = "grocery"):
 
     Rules:
     - respond naturally to what they mean
-    - use very simple English
-    - keep responses short (1 sentence)
+    - never say they are wrong
+    - if needed, suggest a clearer sentence they could say
+    - keep sentences short and simple (1-2 sentences max)
+    - if the input appears to be Rohingya or completely broken, infer their English intent first and respond to that intent in English.
 
-    After your reply, suggest a clearer sentence the learner could say.
-
-    Format exactly like this:
-
-    Response: <your reply>
-
-    Try saying: "<corrected sentence>"
+    You must output in valid JSON format matching this schema:
+    {{
+      "understood": boolean, // false only if the speech is completely unintelligible
+      "was_clear": boolean, // false if they were understood but the English was broken or could be significantly improved
+      "character_response": string, // Your in-character response to the user's intent
+      "correction": string | null, // A suggested clearer phrase for the user to try, or null if was_clear is true
+      "session_end": boolean // true if this is the final wrap-up after about 4 exchanges
+    }}
     """
         }
     ]
@@ -302,24 +305,33 @@ async def voice_chat(file: UploadFile = File(...), scenario: str = "grocery"):
 
     response = get_client().chat.completions.create(
         model=MODEL,
-        max_tokens=40,
         temperature=0.7,
-        messages=messages
+        messages=messages,
+        response_format={"type": "json_object"}
     )
 
-    reply_text = response.choices[0].message.content.strip()
+    text = response.choices[0].message.content
 
-    conversation_memory.append({"role": "user", "content": user_text})
-    conversation_memory.append({"role": "assistant", "content": reply_text})
-    conversation_memory[:] = conversation_memory[-10:]
-
-    print("USER:", user_text)
-    print("AI:", reply_text)
-
-    # 5. text → speech
-    output_file = "reply.mp3"
-
-    tts = gTTS(text=reply_text, lang="en", slow=False)
-    tts.save(output_file)
-    # 5. return audio
-    return FileResponse(output_file, media_type="audio/mpeg")
+    try:
+        parsed = json.loads(text)
+        
+        # update memory using the character_response
+        conversation_memory.append({"role": "user", "content": user_text})
+        conversation_memory.append({"role": "assistant", "content": parsed.get("character_response", "")})
+        conversation_memory[:] = conversation_memory[-10:]
+        
+        return {
+            "user_text": user_text,
+            "response": parsed
+        }
+    except json.JSONDecodeError:
+        return {
+            "user_text": user_text,
+            "response": {
+                "understood": True,
+                "was_clear": True,
+                "character_response": "I see. Let's keep going.",
+                "correction": None,
+                "session_end": False
+            }
+        }

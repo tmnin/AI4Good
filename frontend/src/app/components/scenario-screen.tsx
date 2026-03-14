@@ -221,13 +221,7 @@ export function ScenarioScreen({ type }: ScenarioScreenProps) {
               return (
                 <button
                   key={scenario.id}
-                  onClick={() => {
-                    speakCategory(
-                      rohingyaNames[scenario.id] || scenario.title,
-                      scenario.title
-                    )
-                    setSelectedScenario(scenario)
-                  }}
+                  onClick={() => setSelectedScenario(scenario)}
                   className="group bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 hover:scale-105 text-left"
                 >
                   <div className="relative h-48 overflow-hidden">

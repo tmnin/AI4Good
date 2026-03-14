@@ -197,15 +197,8 @@ async def voice_chat(file: UploadFile = File(...), scenario: str = "food"):
     if scenario_data is None:
         return {"error": "unknown scenario"}
 
-    if scenario not in active_sessions:
-        active_sessions[scenario] = {
-            "situation": random.choice(scenario_data["situations"]),
-            "turns": 0
-        }
-
-    situation = active_sessions[scenario]["situation"]
     role = scenario_data["role"]
-    active_sessions[scenario]["turns"] += 1
+    example_situations = scenario_data["situations"]
 
     starter = {
         "food": "Hello! How can I help you today?",
@@ -231,7 +224,12 @@ async def voice_chat(file: UploadFile = File(...), scenario: str = "food"):
             "content": f"""
 You are helping a beginner practice spoken English through conversation.
 
-Scenario: {situation}
+Scenario type: {scenario}
+
+Possible examples in this scenario:
+- {example_situations[0]}
+- {example_situations[1]}
+- {example_situations[2]}
 
 The conversation begins with you saying:
 "{starter}"
@@ -239,11 +237,14 @@ The conversation begins with you saying:
 You are a: {role}
 
 Rules:
+- Stay within the general scenario type, but follow what the learner actually says.
+- Do not force the conversation into one example if the learner mentions something else.
 - Respond naturally in character first (1 short sentence).
 - Ask a simple follow-up question if appropriate.
 - If the sentence is unnatural or grammatically incorrect,
-provide a corrected sentence and encourage the learner
-to repeat it before continuing the conversation.
+  provide a corrected sentence and encourage the learner
+  to repeat it before continuing the conversation.
+
 Format exactly like:
 
 Response: <reply>

@@ -233,24 +233,41 @@ async def voice_chat(file: UploadFile = File(...), scenario: str = "grocery"):
     situation = random.choice(scenario_data["situations"])
     role = scenario_data["role"]
 
+    starter = {
+    "grocery": "Hello! How can I help you today?",
+    "doctor": "Hello, what seems to be the problem?",
+    "bus": "Where are you going today?",
+    "school": "Hello! How can I help you with school registration?"
+    }.get(scenario, "Hello! How can I help you?")
+
     # 4. generate response
     
     messages = [
         {
             "role": "system",
             "content": f"""
-    You are roleplaying a short English conversation.
+    You are helping a beginner practice spoken English through conversation.
 
     Scenario: {situation}
+
+    The conversation begins with you saying:
+    "{starter}"
     You are a: {role}
 
-    The learner is practicing English and may speak in broken English.
+    The learner may speak in broken English.
 
     Rules:
-    - respond ONLY to what the user asked
-    - do not add extra information
-    - keep the response short (one sentence)
-    - use simple English
+    - respond naturally to what they mean
+    - use very simple English
+    - keep responses short (1 sentence)
+
+    After your reply, suggest a clearer sentence the learner could say.
+
+    Format exactly like this:
+
+    Response: <your reply>
+
+    Try saying: "<corrected sentence>"
     """
         }
     ]
@@ -280,10 +297,5 @@ async def voice_chat(file: UploadFile = File(...), scenario: str = "grocery"):
 
     tts = gTTS(text=reply_text, lang="en", slow=False)
     tts.save(output_file)
-<<<<<<< HEAD
-
-    return FileResponse(output_file, media_type="audio/mpeg")
-=======
     # 5. return audio
     return FileResponse(output_file, media_type="audio/mpeg")
->>>>>>> a75061a5ddb1f8486b47cba53d34674d249aaed7

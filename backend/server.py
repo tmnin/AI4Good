@@ -11,6 +11,8 @@ from gtts import gTTS
 from openai import OpenAI
 from pydantic import BaseModel
 
+conversation_memory = []
+
 # -----------------------------
 # Load environment
 # -----------------------------
@@ -206,14 +208,14 @@ def speak(req: SpeakRequest):
     return StreamingResponse(mp3_fp, media_type="audio/mpeg")
 
 @app.post("/voice-chat")
-async def voice_chat(file: UploadFile = File(...)):
+async def voice_chat(file: UploadFile = File(...), scenario: str = "grocery"):
 
-    # 1. save uploaded audio
+    # 1. save audio
     input_path = "input.wav"
     with open(input_path, "wb") as f:
         f.write(await file.read())
 
-    # 2. transcribe audio
+    # 2. speech → text
     with open(input_path, "rb") as audio:
         transcription = client.audio.transcriptions.create(
             model="whisper-large-v3",
@@ -222,31 +224,76 @@ async def voice_chat(file: UploadFile = File(...)):
 
     user_text = transcription.text
 
-    # 3. send to LLM
+    # 3. load scenario
+    scenario_data = SCENARIOS.get(scenario)
+
+    if scenario_data is None:
+        return {"error": "unknown scenario"}
+
+    situation = random.choice(scenario_data["situations"])
+    role = scenario_data["role"]
+
+    starter = {
+    "grocery": "Hello! How can I help you today?",
+    "doctor": "Hello, what seems to be the problem?",
+    "bus": "Where are you going today?",
+    "school": "Hello! How can I help you with school registration?"
+    }.get(scenario, "Hello! How can I help you?")
+
+    # 4. generate response
+    
+    messages = [
+        {
+            "role": "system",
+            "content": f"""
+    You are helping a beginner practice spoken English through conversation.
+
+    Scenario: {situation}
+
+    The conversation begins with you saying:
+    "{starter}"
+    You are a: {role}
+
+    The learner may speak in broken English.
+
+    Rules:
+    - respond naturally to what they mean
+    - use very simple English
+    - keep responses short (1 sentence)
+
+    After your reply, suggest a clearer sentence the learner could say.
+
+    Format exactly like this:
+
+    Response: <your reply>
+
+    Try saying: "<corrected sentence>"
+    """
+        }
+    ]
+
+    messages.extend(conversation_memory)
+
+    messages.append({"role": "user", "content": user_text})
+
     response = client.chat.completions.create(
         model=MODEL,
         max_tokens=40,
         temperature=0.7,
-        messages=[
-            {
-                "role": "system",
-                "content": "You are having a short conversation to help someone practice English. Respond in ONE short sentence only."
-            },
-            {"role": "user", "content": user_text}
-        ]
+        messages=messages
     )
 
-    reply_text = response.choices[0].message.content
+    reply_text = response.choices[0].message.content.strip()
+
+    conversation_memory.append({"role": "user", "content": user_text})
+    conversation_memory.append({"role": "assistant", "content": reply_text})
+    conversation_memory[:] = conversation_memory[-10:]
+
     print("USER:", user_text)
     print("AI:", reply_text)
 
-    # 4. convert reply to speech
+    # 5. text → speech
     output_file = "reply.mp3"
-
-    reply_text = reply_text.strip()
-
-    if len(reply_text) > 200:
-        reply_text = reply_text[:200]
 
     tts = gTTS(text=reply_text, lang="en", slow=False)
     tts.save(output_file)

@@ -15,7 +15,7 @@ export default function App() {
 
   return (
     <ThemeProvider>
-      <div className="size-full flex bg-gray-50 dark:bg-gray-950">
+      <div className="size-full flex h-svh bg-gray-50 dark:bg-gray-950 overflow-hidden">
         {/* Sidebar */}
         <Sidebar
           activeSection={activeSection}
@@ -24,7 +24,7 @@ export default function App() {
         />
 
         {/* Main Content */}
-        <div className="flex-1 flex flex-col">
+        <div className="flex-1 flex flex-col min-h-0">
           {/* Content Area */}
           {activeSection === 'home' && (
             <DashboardScreen onNavigate={setActiveSection} />

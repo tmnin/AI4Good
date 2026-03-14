@@ -1,5 +1,13 @@
 import { useEffect } from 'react';
-import { X } from 'lucide-react';
+import {
+  Activity,
+  AlertTriangle,
+  Info,
+  MessageCircle,
+  Mic,
+  Volume2,
+  X,
+} from 'lucide-react';
 import { motion } from 'motion/react';
 
 interface HelpModalProps {
@@ -40,12 +48,19 @@ export function HelpModal({ onClose }: HelpModalProps) {
           <X className="w-6 h-6 text-gray-600 dark:text-gray-300" />
         </button>
 
-        <h2 className="text-4xl font-bold text-center text-indigo-900 dark:text-indigo-300 mb-8">ℹ️ How to Use Kotha AI</h2>
+        <h2 className="text-4xl font-bold text-center text-indigo-900 dark:text-indigo-300 mb-8">
+          <span className="inline-flex items-center justify-center gap-3">
+            <Info className="w-8 h-8" />
+            <span>How to Use Kotha AI</span>
+          </span>
+        </h2>
 
         {/* Visual Guide */}
         <div className="space-y-6">
           <div className="flex items-start gap-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-2xl">
-            <div className="text-4xl">💬</div>
+            <div className="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center text-blue-600 dark:text-blue-300">
+              <MessageCircle className="w-6 h-6" />
+            </div>
             <div>
               <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-1">Practice Conversations</h3>
               <p className="text-gray-600 dark:text-gray-400">Learn common phrases and everyday conversations</p>
@@ -53,7 +68,9 @@ export function HelpModal({ onClose }: HelpModalProps) {
           </div>
 
           <div className="flex items-start gap-4 p-4 bg-red-50 dark:bg-red-900/20 rounded-2xl">
-            <div className="text-4xl">🚨</div>
+            <div className="w-10 h-10 rounded-xl bg-red-100 dark:bg-red-900/40 flex items-center justify-center text-red-600 dark:text-red-300">
+              <AlertTriangle className="w-6 h-6" />
+            </div>
             <div>
               <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-1">Emergency Phrases</h3>
               <p className="text-gray-600 dark:text-gray-400">Important phrases for urgent situations</p>
@@ -61,7 +78,9 @@ export function HelpModal({ onClose }: HelpModalProps) {
           </div>
 
           <div className="flex items-start gap-4 p-4 bg-purple-50 dark:bg-purple-900/20 rounded-2xl">
-            <div className="text-4xl">🎤</div>
+            <div className="w-10 h-10 rounded-xl bg-purple-100 dark:bg-purple-900/40 flex items-center justify-center text-purple-600 dark:text-purple-300">
+              <Mic className="w-6 h-6" />
+            </div>
             <div>
               <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-1">Free Speaking</h3>
               <p className="text-gray-600 dark:text-gray-400">Practice speaking freely in Rohingya</p>
@@ -69,7 +88,9 @@ export function HelpModal({ onClose }: HelpModalProps) {
           </div>
 
           <div className="flex items-start gap-4 p-4 bg-green-50 dark:bg-green-900/20 rounded-2xl">
-            <div className="text-4xl">✨</div>
+            <div className="w-10 h-10 rounded-xl bg-green-100 dark:bg-green-900/40 flex items-center justify-center text-green-600 dark:text-green-300">
+              <Activity className="w-6 h-6" />
+            </div>
             <div>
               <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-1">When Pulsing</h3>
               <p className="text-gray-600 dark:text-gray-400">Tap microphone when you see pulsing circles and hear the beep</p>
@@ -77,7 +98,9 @@ export function HelpModal({ onClose }: HelpModalProps) {
           </div>
 
           <div className="flex items-start gap-4 p-4 bg-orange-50 dark:bg-orange-900/20 rounded-2xl">
-            <div className="text-4xl">🔊</div>
+            <div className="w-10 h-10 rounded-xl bg-orange-100 dark:bg-orange-900/40 flex items-center justify-center text-orange-600 dark:text-orange-300">
+              <Volume2 className="w-6 h-6" />
+            </div>
             <div>
               <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-1">Listen & Repeat</h3>
               <p className="text-gray-600 dark:text-gray-400">Tap any phrase to hear pronunciation, then repeat</p>
@@ -87,7 +110,10 @@ export function HelpModal({ onClose }: HelpModalProps) {
 
         {/* Audio indicator */}
         <div className="mt-8 text-center">
-          <p className="text-sm text-gray-500 dark:text-gray-400">🔊 Audio explanation playing in Rohingya</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400 inline-flex items-center gap-2">
+            <Volume2 className="w-4 h-4" />
+            <span>Audio explanation playing in Rohingya</span>
+          </p>
         </div>
       </motion.div>
     </motion.div>

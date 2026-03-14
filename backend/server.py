@@ -199,6 +199,7 @@ async def voice_chat(file: UploadFile = File(...), scenario: str = "food"):
 
     role = scenario_data["role"]
     example_situations = scenario_data["situations"]
+    examples = "\n".join([f"- {s}" for s in example_situations])
 
     starter = {
         "food": "Hello! How can I help you today?",
@@ -250,6 +251,7 @@ Format exactly like:
 Response: <reply>
 
 Correction: "<grammar correction>" OR null
+Do not include quotation marks.
 """
         }
     ]
@@ -275,6 +277,9 @@ Correction: "<grammar correction>" OR null
     correction = None
     if "Correction:" in reply_raw:
         correction = reply_raw.split("Correction:")[1].strip()
+
+        # remove quotes so TTS doesn't say "quote"
+        correction = correction.strip('"').strip("'")
     if correction and correction != "null":
         # do NOT advance the conversation yet
         reply_text = " Try saying: " + correction + ". " + reply_text
